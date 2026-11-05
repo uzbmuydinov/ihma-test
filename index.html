@@ -1,0 +1,1417 @@
+<!doctype html>
+<html lang="uz-Latn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IHMA malaka baholash</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+/* Layout: IHMA e-learning uslubi — oq yumaloq yuqori panel, och ko'k fon, oq kartalar; test oqimi + admin paneli bitta sahifada.
+   Ranglar IHMA-dizayn-qoidalari.md dan. "-soft" va "-text" tokenlari holat ranglaridan kontrast uchun hosil qilingan. */
+:root {
+  --ihma-primary: #2964C2;
+  --ihma-primary-dark: #1D4FA8;
+  --ihma-navy: #173F8F;
+  --ihma-menu-item: #3475DB;
+  --ihma-menu-active: #3F86E6;
+  --ihma-accent: #2CCFBE;
+  --ihma-bg: #E8F1FF;
+  --ihma-soft: #EEF4FF;
+  --ihma-card: #FFFFFF;
+  --ihma-line: #D3E1F7;
+  --ihma-line-2: #BCD2F5;
+  --ihma-text: #1F2D4D;
+  --ihma-muted: #5D6B85;
+  --ihma-success: #5CC871;
+  --ihma-success-dark: #1F9D3A;
+  --ihma-warning: #D39B17;
+  --ihma-danger: #C0151A;
+  /* hosila tokenlar (holat fonlari va o'qiladigan matn ranglari) */
+  --ihma-success-soft: #E7F6EA;
+  --ihma-success-text: #17762C;
+  --ihma-warning-soft: #FBF3DF;
+  --ihma-warning-text: #6B4E00;
+  --ihma-danger-soft: #FCE9E9;
+  --ihma-on-dark: #FFFFFF;
+  --ihma-on-dark-muted: #C9D8F5;
+  /* to'ldirilgan fonlar (oq matn ostida) va chiziqlar — qorong'i rejimda alohida qiymat oladi */
+  --ihma-fill: #2964C2;
+  --ihma-fill-hover: #1D4FA8;
+  --ihma-banner: #173F8F;
+  --ihma-success-line: #BFE6C8;
+  --ihma-warning-line: #EBD39A;
+  --ihma-danger-line: #F2C2C3;
+  --ihma-row-hover: #F6F9FF;
+  --ihma-raised-border: transparent;
+
+  --ihma-font: "Montserrat", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  --fs-scale: 1;
+  --fs-h1: calc(24px * var(--fs-scale));
+  --fs-h2: calc(17px * var(--fs-scale));
+  --fs-body: calc(14px * var(--fs-scale));
+  --fs-cap: calc(12px * var(--fs-scale));
+  --fs-num: calc(36px * var(--fs-scale));
+  --radius-card: 12px;
+  --radius-ctl: 10px;
+  --shadow: 0 8px 30px rgba(20, 40, 90, .12);
+  color-scheme: light;
+}
+/* Qorong'i rejim: IHMA qoidalarida yo'q, shu sababli asosiy ko'kdan hosil qilingan; matn kontrasti 4.5:1 dan yuqori */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ihma-primary: #7FAAF0; --ihma-primary-dark: #A9C6F6; --ihma-navy: #DCE7FB;
+    --ihma-bg: #0E1729; --ihma-soft: #18263F; --ihma-card: #131F35; --ihma-line: #26385A; --ihma-line-2: #35507D;
+    --ihma-text: #E3EAF7; --ihma-muted: #9AA9C4; --ihma-danger: #FF8A8C;
+    --ihma-success-soft: #13301E; --ihma-success-text: #7FD99A; --ihma-success-line: #24553A;
+    --ihma-warning-soft: #33290F; --ihma-warning-text: #F0C866; --ihma-warning-line: #5C4A1C;
+    --ihma-danger-soft: #3A1517; --ihma-danger-line: #6B2A2D;
+    --ihma-fill: #2F6BCB; --ihma-fill-hover: #2558B0; --ihma-banner: #173F8F;
+    --ihma-row-hover: #1A2A46; --ihma-raised-border: #26385A;
+    --shadow: 0 8px 30px rgba(0, 0, 0, .35);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ihma-primary: #7FAAF0; --ihma-primary-dark: #A9C6F6; --ihma-navy: #DCE7FB;
+  --ihma-bg: #0E1729; --ihma-soft: #18263F; --ihma-card: #131F35; --ihma-line: #26385A; --ihma-line-2: #35507D;
+  --ihma-text: #E3EAF7; --ihma-muted: #9AA9C4; --ihma-danger: #FF8A8C;
+  --ihma-success-soft: #13301E; --ihma-success-text: #7FD99A; --ihma-success-line: #24553A;
+  --ihma-warning-soft: #33290F; --ihma-warning-text: #F0C866; --ihma-warning-line: #5C4A1C;
+  --ihma-danger-soft: #3A1517; --ihma-danger-line: #6B2A2D;
+  --ihma-fill: #2F6BCB; --ihma-fill-hover: #2558B0; --ihma-banner: #173F8F;
+  --ihma-row-hover: #1A2A46; --ihma-raised-border: #26385A;
+  --shadow: 0 8px 30px rgba(0, 0, 0, .35);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--ihma-bg);
+  color: var(--ihma-text);
+  font-family: var(--ihma-font);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 40px;
+}
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+h1 { font-size: var(--fs-h1); line-height: 1.25; font-weight: 700; color: var(--ihma-navy); }
+h2 { font-size: var(--fs-h2); line-height: 1.35; font-weight: 600; }
+p { margin: 0; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--ihma-navy); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+.muted { color: var(--ihma-muted); }
+.cap { font-size: var(--fs-cap); }
+.eyebrow { font-size: var(--fs-cap); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--ihma-muted); }
+.icon { width: 18px; height: 18px; flex: none; }
+
+/* yuqori panel: tepaga qotirilgan, ixcham — brend | bo'limlar | sozlamalar */
+.shell { max-width: 2560px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: calc(env(safe-area-inset-top, 0px) + 8px); background: var(--ihma-bg); z-index: 19; }
+.topbar {
+  position: sticky; top: calc(env(safe-area-inset-top, 0px) + 8px); z-index: 20;
+  background: var(--ihma-card); border: 1px solid var(--ihma-raised-border); border-radius: var(--radius-card); box-shadow: var(--shadow);
+  padding: 8px 8px 8px 12px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px 16px;
+}
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.brand-mark { width: 36px; height: 36px; border-radius: var(--radius-ctl); background: var(--ihma-fill); color: var(--ihma-on-dark); display: grid; place-items: center; flex: none; }
+.brand-text { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
+.brand-name { font-weight: 700; font-size: var(--fs-h2); color: var(--ihma-navy); letter-spacing: .02em; }
+.brand-sub { font-size: var(--fs-cap); color: var(--ihma-muted); white-space: nowrap; }
+.tabs { justify-self: center; display: flex; gap: 4px; padding: 4px; background: var(--ihma-soft); border-radius: 12px; }
+.tab {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; background: transparent; color: var(--ihma-text);
+  font-weight: 600; padding: 0 14px; min-height: 40px; border-radius: 9px; cursor: pointer; white-space: nowrap;
+}
+.tab:hover { background: var(--ihma-card); }
+.tab[aria-current="page"] { background: var(--ihma-fill); color: var(--ihma-on-dark); box-shadow: 0 2px 8px rgba(41, 100, 194, .28); }
+.tab:disabled { opacity: .45; cursor: not-allowed; background: transparent; }
+.l-short { display: none; }
+.utils { display: flex; align-items: center; gap: 2px; padding: 4px; background: var(--ihma-soft); border-radius: 12px; }
+.langs { display: flex; gap: 2px; }
+.langs button, .u-btn {
+  min-width: 40px; height: 40px; padding: 0 10px; border: 0; border-radius: 9px; background: transparent;
+  color: var(--ihma-muted); font-weight: 700; font-size: var(--fs-cap); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 1px;
+}
+.u-btn { color: var(--ihma-text); }
+.langs button:hover, .u-btn:hover { background: var(--ihma-card); color: var(--ihma-text); }
+.langs button[aria-pressed="true"] { background: var(--ihma-card); color: var(--ihma-primary); box-shadow: 0 1px 4px rgba(20, 40, 90, .14); }
+.u-btn:disabled { opacity: .4; cursor: not-allowed; background: transparent; }
+.u-sep { width: 1px; height: 22px; background: var(--ihma-line-2); margin: 0 4px; flex: none; }
+.a-small { font-size: 12px; }
+.a-big { font-size: 16px; }
+@media (max-width: 1080px) {
+  .topbar { grid-template-columns: minmax(0, 1fr) auto; }
+  .tabs { grid-column: 1 / -1; grid-row: 2; justify-self: stretch; }
+  .tabs .tab { flex: 1 1 0; }
+}
+@media (max-width: 600px) {
+  .topbar { padding: 8px; }
+  .brand-text { display: none; }
+  .l-long { display: none; }
+  .l-short { display: inline; }
+  .tab { padding: 0 8px; gap: 6px; }
+  .langs button, .u-btn { min-width: 36px; padding: 0 6px; }
+  .u-sep { margin: 0 2px; }
+}
+
+/* umumiy bloklar */
+.view { display: flex; flex-direction: column; gap: 24px; }
+.card { background: var(--ihma-card); border: 1px solid var(--ihma-line); border-radius: var(--radius-card); padding: 24px; min-width: 0; }
+.card.raised { box-shadow: var(--shadow); border-color: var(--ihma-raised-border); }
+.stack-8 { display: flex; flex-direction: column; gap: 8px; }
+.stack-16 { display: flex; flex-direction: column; gap: 16px; }
+.stack-24 { display: flex; flex-direction: column; gap: 24px; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.row.between { justify-content: space-between; }
+.grid-2 { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 24px; align-items: start; }
+.grid-case { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: stretch; }
+.grid-case .textarea { flex: 1 1 auto; }
+@media (max-width: 880px) { .grid-2, .grid-case { grid-template-columns: minmax(0, 1fr); } }
+
+/* banner */
+.banner { background: var(--ihma-banner); color: var(--ihma-on-dark); border-radius: var(--radius-card); padding: 32px; display: flex; flex-direction: column; gap: 16px; }
+.banner .eyebrow { color: var(--ihma-on-dark-muted); display: flex; align-items: center; gap: 8px; }
+.banner .eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--ihma-accent); flex: none; }
+.banner h1 { color: var(--ihma-on-dark); }
+.banner p { color: var(--ihma-on-dark-muted); max-width: 68ch; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px; }
+.facts li { background: rgba(255, 255, 255, .12); border-radius: 20px; padding: 6px 14px; font-weight: 600; font-size: var(--fs-cap); color: var(--ihma-on-dark); }
+@media (max-width: 520px) { .banner { padding: 24px; } }
+
+/* forma */
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-weight: 600; }
+.input, .select, .textarea {
+  width: 100%; border: 1px solid var(--ihma-line-2); border-radius: var(--radius-ctl); background: var(--ihma-card);
+  padding: 0 14px; min-height: 48px; color: var(--ihma-text);
+}
+.textarea { padding: 14px; min-height: 360px; line-height: 1.7; resize: vertical; }
+.input:focus, .select:focus, .textarea:focus { outline: none; border-color: var(--ihma-primary); box-shadow: 0 0 0 3px rgba(41, 100, 194, .18); }
+.field.invalid .input, .field.invalid .select { border-color: var(--ihma-danger); }
+.field-err { color: var(--ihma-danger); font-size: var(--fs-cap); font-weight: 500; }
+.hint { color: var(--ihma-muted); font-size: var(--fs-cap); }
+
+.btn {
+  min-height: 44px; padding: 0 20px; border-radius: var(--radius-ctl); border: 1px solid transparent;
+  font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-align: center;
+}
+.btn-primary { background: var(--ihma-fill); color: var(--ihma-on-dark); }
+.btn-primary:hover { background: var(--ihma-fill-hover); }
+.btn-secondary { background: var(--ihma-card); border-color: var(--ihma-primary); color: var(--ihma-primary); }
+.btn-secondary:hover { background: var(--ihma-soft); }
+.btn:disabled { background: var(--ihma-line); border-color: transparent; color: var(--ihma-muted); cursor: not-allowed; }
+.btn.block { width: 100%; min-height: 48px; }
+.btn.small { min-height: 36px; padding: 0 14px; font-size: var(--fs-cap); }
+
+/* xabarlar */
+.notice { display: flex; gap: 10px; align-items: flex-start; padding: 12px 16px; border-radius: var(--radius-ctl); border: 1px solid transparent; }
+.notice .icon { margin-top: 2px; }
+.notice.info { background: var(--ihma-soft); border-color: var(--ihma-line); color: var(--ihma-text); }
+.notice.warn { background: var(--ihma-warning-soft); border-color: var(--ihma-warning-line); color: var(--ihma-warning-text); }
+.notice.ok { background: var(--ihma-success-soft); border-color: var(--ihma-success-line); color: var(--ihma-success-text); }
+.notice.bad { background: var(--ihma-danger-soft); border-color: var(--ihma-danger-line); color: var(--ihma-danger); }
+
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 6px; font-size: var(--fs-cap); font-weight: 600; white-space: nowrap; }
+.badge.ok { background: var(--ihma-success-soft); color: var(--ihma-success-text); }
+.badge.warn { background: var(--ihma-warning-soft); color: var(--ihma-warning-text); }
+.badge.bad { background: var(--ihma-danger-soft); color: var(--ihma-danger); }
+.badge.info { background: var(--ihma-soft); color: var(--ihma-primary-dark); }
+
+/* "qanday o'tadi" */
+.steps { counter-reset: s; display: flex; flex-direction: column; gap: 16px; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 12px; align-items: start; }
+.steps li::before {
+  content: counter(s); width: 32px; height: 32px; border-radius: 50%; background: var(--ihma-soft); color: var(--ihma-primary);
+  display: grid; place-items: center; font-weight: 700; font-size: var(--fs-cap);
+}
+
+/* keys */
+.bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 12px 16px; }
+.who { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.timer { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 20px; background: var(--ihma-soft); color: var(--ihma-navy); font-weight: 600; }
+.timer b { font-size: var(--fs-h2); font-variant-numeric: tabular-nums; }
+.timer.low { background: var(--ihma-warning-soft); color: var(--ihma-warning-text); }
+.task-box { background: var(--ihma-soft); border-radius: var(--radius-ctl); padding: 16px; display: flex; flex-direction: column; gap: 6px; }
+.task-box .eyebrow { color: var(--ihma-primary-dark); }
+.task-box p { font-weight: 600; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips li { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--ihma-line); background: var(--ihma-card); font-size: var(--fs-cap); font-weight: 500; }
+.chips li b { color: var(--ihma-primary); margin-right: 4px; }
+.divider { height: 1px; background: var(--ihma-line); }
+.confirm { border: 1px solid var(--ihma-line-2); background: var(--ihma-soft); border-radius: var(--radius-ctl); padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+
+/* baholanmoqda */
+.eval-card { max-width: 640px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+.spinner { width: 44px; height: 44px; border-radius: 50%; border: 4px solid var(--ihma-soft); border-top-color: var(--ihma-primary); animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation: none; border-top-color: var(--ihma-accent); } }
+
+/* natija */
+.score-card { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px 24px; align-items: center; }
+.medal { width: 64px; height: 64px; border-radius: 50%; background: var(--ihma-soft); color: var(--ihma-primary); display: grid; place-items: center; }
+.medal svg { width: 34px; height: 34px; }
+.score-line { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; }
+.score-big { font-size: var(--fs-num); font-weight: 700; color: var(--ihma-navy); line-height: 1.1; font-variant-numeric: tabular-nums; }
+.score-max { font-size: var(--fs-h2); font-weight: 600; color: var(--ihma-muted); }
+.meter { height: 8px; border-radius: 20px; background: var(--ihma-soft); overflow: hidden; }
+.meter > span { display: block; height: 100%; border-radius: 20px; background: var(--ihma-accent); }
+.score-summary { grid-column: 1 / -1; }
+@media (max-width: 520px) { .score-card { grid-template-columns: minmax(0, 1fr); } }
+.meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px 24px; }
+.meta div { display: flex; flex-direction: column; min-width: 0; }
+.meta dt { font-size: var(--fs-cap); color: var(--ihma-muted); }
+.meta dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.crit { border: 1px solid var(--ihma-line); border-radius: var(--radius-card); padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.crit-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+.crit-head h3 { font-size: var(--fs-body); font-weight: 600; }
+.crit-head h3 span { color: var(--ihma-primary); margin-right: 6px; font-variant-numeric: tabular-nums; }
+.crit-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.reasons { display: flex; flex-direction: column; gap: 6px; }
+.reasons .r-title { display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: var(--fs-cap); }
+.reasons.plus .r-title { color: var(--ihma-success-text); }
+.reasons.minus .r-title { color: var(--ihma-warning-text); }
+.reasons ul { display: flex; flex-direction: column; gap: 4px; }
+.reasons li { position: relative; padding-left: 14px; }
+.reasons li::before { content: ""; position: absolute; left: 2px; top: .7em; width: 5px; height: 5px; border-radius: 50%; background: var(--ihma-line-2); }
+.indep { background: var(--ihma-soft); border-radius: var(--radius-card); padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* tarix */
+.hist-item { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 16px 0; border-top: 1px solid var(--ihma-line); }
+.hist-item:first-child { border-top: 0; padding-top: 0; }
+
+/* panel */
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 880px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.kpi { display: flex; flex-direction: column; gap: 4px; padding: 16px 20px; }
+.kpi .v { font-size: var(--fs-num); font-weight: 700; color: var(--ihma-navy); line-height: 1.15; font-variant-numeric: tabular-nums; }
+.kpi .v small { font-size: var(--fs-h2); color: var(--ihma-muted); font-weight: 600; }
+.filters { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr) minmax(0, 1.2fr) auto; gap: 8px; align-items: center; }
+@media (max-width: 880px) { .filters { grid-template-columns: minmax(0, 1fr); } }
+.bars { display: flex; flex-direction: column; gap: 10px; }
+.bar-row { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr) 96px; gap: 12px; align-items: center; }
+.bar-track { height: 10px; border-radius: 20px; background: var(--ihma-soft); overflow: hidden; }
+.bar-track span { display: block; height: 100%; border-radius: 20px; background: var(--ihma-primary); }
+.bar-val { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+.bar-val small { color: var(--ihma-muted); font-weight: 500; }
+@media (max-width: 560px) { .bar-row { grid-template-columns: minmax(0, 1fr) 80px; } .bar-row .bar-track { grid-column: 1 / -1; grid-row: 2; } }
+.table-wrap { overflow-x: auto; border: 1px solid var(--ihma-line); border-radius: var(--radius-card); }
+table { width: 100%; border-collapse: collapse; min-width: 980px; }
+th { background: var(--ihma-soft); text-align: left; font-size: var(--fs-cap); font-weight: 600; color: var(--ihma-muted); padding: 10px 12px; white-space: nowrap; }
+td { padding: 12px; border-top: 1px solid var(--ihma-line); vertical-align: middle; }
+tbody tr:hover td { background: var(--ihma-row-hover); }
+tbody tr.sel td { background: var(--ihma-soft); }
+td.r, th.r { text-align: right; }
+td.num, td.case { white-space: nowrap; }
+.answer-text { white-space: pre-wrap; overflow-wrap: anywhere; background: var(--ihma-soft); border-radius: var(--radius-ctl); padding: 16px; max-height: 360px; overflow-y: auto; }
+.empty { text-align: center; padding: 32px 16px; color: var(--ihma-muted); }
+
+footer { font-size: var(--fs-cap); color: var(--ihma-muted); text-align: center; }
+
+.relay-code, .imp-area { min-height: 96px; font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 12px; word-break: break-all; line-height: 1.5; }
+.relay { border-left: 0; }
+/* ---------- admin sahifasi (faqat tahrirlash huquqi borlarga) ---------- */
+.admin-nav { justify-self: center; display: flex; align-items: center; gap: 8px 12px; min-width: 0; }
+.admin-chip {
+  display: inline-flex; align-items: center; gap: 8px; padding: 0 14px; min-height: 40px; border-radius: 9px;
+  background: var(--ihma-soft); color: var(--ihma-primary-dark); font-weight: 700; white-space: nowrap;
+}
+.admin-exit { min-height: 40px; padding: 0 14px; }
+.admin-btn { gap: 6px; color: var(--ihma-primary); }
+body.admin-page .tabs { display: none; }
+body.admin-page .topbar { box-shadow: inset 0 3px 0 var(--ihma-accent), var(--shadow); }
+@media (max-width: 1080px) {
+  .admin-nav { grid-column: 1 / -1; grid-row: 2; justify-self: stretch; justify-content: space-between; }
+}
+@media (max-width: 600px) {
+  .admin-lbl { display: none; }
+  .admin-chip { padding: 0 10px; }
+}
+
+/* ---------- keng ekran: oyna to'liq ishchi maydon sifatida ---------- */
+.dash-top, .dash-main, .dash-side { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+.dash-pick {
+  display: none; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+  min-height: 260px; text-align: center; color: var(--ihma-muted); border-style: dashed;
+}
+.dash-pick .icon { width: 32px; height: 32px; color: var(--ihma-primary); }
+.res-side, .res-main { display: contents; }
+.res-head { order: 1; } .res-relay { order: 2; } .res-score { order: 3; } .res-crit { order: 4; } .res-indep { order: 5; } .res-act { order: 6; }
+
+@media (min-width: 881px) {
+  /* keys: ikki ustun ekran balandligini egallaydi, vaziyat matni o'z kartasi ichida aylantiriladi */
+  #v-case { height: calc(100vh - var(--tb-h, 64px) - 56px); height: calc(100dvh - var(--tb-h, 64px) - 56px); min-height: 520px; }
+  #v-case .grid-case { flex: 1 1 0; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  #pane-case, #pane-answer { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+  #pane-answer .textarea { flex: 1 1 0; min-height: 160px; resize: none; }
+}
+@media (min-width: 1081px) {
+  body { padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px)); }
+}
+@media (min-width: 1200px) {
+  /* kirish: banner | forma | qanday o'tadi — bitta qatorda */
+  #v-start { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.15fr) minmax(0, .95fr); gap: 24px; align-items: stretch; }
+  #v-start > .grid-2 { display: contents; }
+  #v-start .banner { justify-content: center; padding: 40px; }
+  /* natija: chapda ball va xulosa, o'ngda mezonlar bo'yicha izoh */
+  #result-body.split { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 24px; align-items: start; }
+  #result-body.split .res-side, #result-body.split .res-main { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+  /* panel: hududlar va kod qo'shish yonma-yon */
+  .dash-top { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); align-items: stretch; }
+}
+@media (min-width: 1500px) {
+  /* panel: chapda ro'yxat, o'ngda tanlangan urinish */
+  .dash-main { display: grid; grid-template-columns: minmax(0, 1fr) clamp(420px, 34%, 680px); align-items: start; }
+  .dash-side { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px + var(--tb-h, 64px)); }
+  #dash-detail { max-height: calc(100vh - var(--tb-h, 64px) - 48px); max-height: calc(100dvh - var(--tb-h, 64px) - 48px); overflow-y: auto; overscroll-behavior: contain; }
+  .dash-pick:not([hidden]) { display: flex; }
+  .dash-main table { min-width: 860px; }
+}
+@media (max-width: 720px) {
+  .dash-top, .dash-main, .dash-side { gap: 16px; }
+  body.admin-page { padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+}
+@media (max-width: 400px) {
+  .langs button, .u-btn { min-width: 32px; padding: 0 4px; }
+  #admin-sep { display: none; }
+}
+
+/* ---------- tuman tanlovi, sinxron kartasi, havolalar ---------- */
+.select:disabled { opacity: .65; cursor: not-allowed; background: var(--ihma-soft); }
+.sub-cell { display: block; font-size: var(--fs-cap); color: var(--ihma-muted); }
+a.u-btn, a.btn { text-decoration: none; }
+.sync-card { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; padding: 16px 20px; }
+.sync-act { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; text-align: right; max-width: 460px; }
+@media (min-width: 881px) {
+  .filters { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.2fr) minmax(0, 1.3fr) minmax(0, 1.2fr) auto; }
+}
+@media (max-width: 720px) {
+  .sync-act { align-items: stretch; text-align: left; width: 100%; max-width: none; }
+  .sync-act .btn { width: 100%; }
+}
+
+/* ---------- telefon uchun moslashuv (asosiy foydalanuvchilar telefondan kiradi) ---------- */
+.pane-switch, .to-answer { display: none; }
+.pane-count { margin-left: 4px; color: var(--ihma-muted); font-weight: 500; }
+.dash-cards { display: none; flex-direction: column; gap: 8px; }
+.dcard { border: 1px solid var(--ihma-line); border-radius: var(--radius-card); padding: 14px; display: flex; flex-direction: column; gap: 6px; background: var(--ihma-card); }
+.dcard.sel { border-color: var(--ihma-primary); }
+.dcard-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.dcard-top b { overflow-wrap: anywhere; }
+.dcard .row { gap: 4px 10px; }
+.dcard .btn { align-self: flex-start; }
+
+@media (max-width: 720px) {
+  :root { --fs-body: calc(15px * var(--fs-scale)); }
+  body { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+  body.in-test { padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+  .shell { gap: 16px; }
+  .view { gap: 16px; }
+  .card { padding: 18px; }
+  .banner { padding: 22px 20px; gap: 12px; }
+  /* iPhone'da maydon bosilganda sahifa kattalashib ketmasligi uchun 16px dan kichik bo'lmasin */
+  .input, .select, .textarea { font-size: max(16px, var(--fs-body)); }
+
+  /* pastki menyu (ilova uslubida) */
+  .topbar { grid-template-columns: minmax(0, 1fr) auto; }
+  .tabs {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; justify-self: stretch;
+    background: var(--ihma-card); border-top: 1px solid var(--ihma-line); border-radius: 18px 18px 0 0;
+    box-shadow: 0 -8px 24px rgba(20, 40, 90, .12); gap: 4px;
+    padding: 6px max(10px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px));
+  }
+  body.in-test .tabs { display: none; }
+  .tabs .tab {
+    flex: 1 1 0; flex-direction: column; gap: 2px; min-height: 58px; padding: 4px; border-radius: 12px;
+    background: transparent; box-shadow: none; color: var(--ihma-muted); font-size: var(--fs-cap);
+  }
+  .tabs .tab .icon { width: 22px; height: 22px; padding: 3px 16px; box-sizing: content-box; border-radius: 14px; }
+  .tabs .tab[aria-current="page"] { background: transparent; box-shadow: none; color: var(--ihma-primary); }
+  .tabs .tab[aria-current="page"] .icon { background: var(--ihma-soft); }
+  .tabs .tab:hover { background: transparent; }
+  .l-long { display: none; }
+  .l-short { display: inline; }
+
+  /* keys: Vaziyat / Javobim almashtirgichi va doim ko'rinadigan taymer */
+  .bar {
+    position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px + var(--tb-h, 56px)); z-index: 15;
+    padding: 6px; gap: 6px; flex-wrap: nowrap;
+    box-shadow: 0 -10px 0 0 var(--ihma-bg), var(--shadow);
+  }
+  .who { display: none; }
+  .pane-switch { display: flex; flex: 1 1 auto; min-width: 0; gap: 4px; padding: 4px; background: var(--ihma-soft); border-radius: 12px; }
+  .pane-switch button {
+    flex: 1 1 0; min-height: 40px; border: 0; border-radius: 9px; background: transparent; color: var(--ihma-muted);
+    font-weight: 600; padding: 0 6px; white-space: nowrap; cursor: pointer;
+  }
+  .pane-switch button[aria-selected="true"] { background: var(--ihma-card); color: var(--ihma-primary); box-shadow: 0 1px 4px rgba(20, 40, 90, .14); }
+  .timer { flex: none; padding: 6px 10px; }
+  .timer [data-i18n="timerLabel"] { display: none; }
+  .grid-case[data-pane="answer"] .pane-case, .grid-case[data-pane="case"] .pane-answer { display: none; }
+  .to-answer { display: inline-flex; }
+  .grid-case .textarea { min-height: max(240px, 46vh); }
+
+  /* natija va panel */
+  .actions .btn { flex: 1 1 100%; }
+  .kpis { gap: 8px; }
+  .kpi { padding: 14px 16px; }
+  .kpi .v { font-size: calc(28px * var(--fs-scale)); }
+  .table-wrap { display: none; }
+  .dash-cards { display: flex; }
+}
+@media (max-width: 420px) {
+  .brand-text { display: none; }
+}
+
+/* Telegram Mini App qo'shimchalari */
+[hidden]:not([hidden=until-found i]) { display: none !important; }
+.spinner.small { width: 22px; height: 22px; border-width: 3px; flex: none; }
+.notice .btn { align-self: flex-start; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.4-3.4 8-8 9-4.6-1-8-4.6-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>
+      </span>
+      <span class="brand-text">
+        <span class="brand-name">IHMA</span>
+        <span class="brand-sub" data-i18n="brandSub"></span>
+      </span>
+    </div>
+    <nav class="tabs" data-i18n-aria="navAria">
+      <button type="button" class="tab" id="tab-test">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 11l2 2 4-4M9 17h6"/></svg>
+        <span data-i18n="navTest"></span>
+      </button>
+      <button type="button" class="tab" id="tab-history">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <span class="l-long" data-i18n="navHistory"></span><span class="l-short" data-i18n="navHistoryShort"></span>
+      </button>
+    </nav>
+    <div class="utils">
+      <div class="langs" role="group" data-i18n-aria="langAria">
+        <button type="button" data-lang="lat" lang="uz-Latn" title="Oʻzbekcha" aria-label="Oʻzbekcha">Oʻz</button>
+        <button type="button" data-lang="cyr" lang="uz-Cyrl" title="Ўзбекча" aria-label="Ўзбекча">Ўз</button>
+        <button type="button" data-lang="ru" lang="ru" title="Русский" aria-label="Русский">Ру</button>
+      </div>
+      <span class="u-sep" aria-hidden="true"></span>
+      <button type="button" class="u-btn" id="fs-dec"><span class="a-small">A</span>−</button>
+      <button type="button" class="u-btn" id="fs-inc"><span class="a-big">A</span>+</button>
+      <span class="u-sep" aria-hidden="true"></span>
+      <button type="button" class="u-btn" id="theme-btn">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" id="theme-moon"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" id="theme-sun" hidden><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- 1. Kirish -->
+    <section class="view" id="v-start">
+      <div class="banner">
+        <span class="eyebrow" data-i18n="heroEyebrow"></span>
+        <h1 data-i18n="heroTitle"></h1>
+        <p data-i18n="heroText"></p>
+        <ul class="facts">
+          <li data-i18n="fact1"></li>
+          <li data-i18n="fact2"></li>
+          <li data-i18n="fact3"></li>
+        </ul>
+      </div>
+      <div class="grid-2">
+        <form class="card raised stack-16" id="start-form" novalidate>
+          <h2 data-i18n="formTitle"></h2>
+          <div id="notices" class="stack-8" aria-live="polite"></div>
+          <div class="field" id="f-fio">
+            <label for="fio" data-i18n="fioLabel"></label>
+            <input class="input" id="fio" name="fio" type="text" autocomplete="name" maxlength="120" data-i18n-ph="fioPh">
+            <span class="hint" data-i18n="fioHint"></span>
+            <span class="field-err" data-i18n="fioErr" hidden></span>
+          </div>
+          <div class="field" id="f-region">
+            <label for="region" data-i18n="regionLabel"></label>
+            <select class="select" id="region" name="region"></select>
+            <span class="field-err" data-i18n="regionErr" hidden></span>
+          </div>
+          <div class="field" id="f-district">
+            <label for="district" data-i18n="districtLabel"></label>
+            <select class="select" id="district" name="district" disabled></select>
+            <span class="field-err" data-i18n="districtErr" hidden></span>
+          </div>
+          <div class="field" id="f-role">
+            <label for="role" data-i18n="roleLabel"></label>
+            <select class="select" id="role" name="role"></select>
+            <span class="field-err" data-i18n="roleErr" hidden></span>
+          </div>
+          <button type="submit" class="btn btn-primary block" id="start-btn">
+            <span data-i18n="start"></span>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+          <p class="hint" data-i18n="startNote"></p>
+        </form>
+        <aside class="card stack-16">
+          <h2 data-i18n="howTitle"></h2>
+          <ol class="steps">
+            <li><span data-i18n="how1"></span></li>
+            <li><span data-i18n="how2"></span></li>
+            <li><span data-i18n="how3"></span></li>
+            <li><span data-i18n="how4"></span></li>
+          </ol>
+          <div class="notice info cap">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+            <span data-i18n="howNote"></span>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 2. Keys -->
+    <section class="view" id="v-case" hidden>
+      <div class="card raised bar" id="case-bar">
+        <span class="who" id="case-who"></span>
+        <div class="pane-switch" role="tablist" data-i18n-aria="caseTitle">
+          <button type="button" role="tab" id="pane-btn-case" data-pane="case" aria-selected="true" aria-controls="pane-case"><span data-i18n="paneCase"></span></button>
+          <button type="button" role="tab" id="pane-btn-answer" data-pane="answer" aria-selected="false" aria-controls="pane-answer"><span data-i18n="paneAnswer"></span><span class="pane-count num" id="pane-count"></span></button>
+        </div>
+        <span class="timer" id="timer" role="timer">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></svg>
+          <span data-i18n="timerLabel"></span>
+          <b id="timer-val">40:00</b>
+        </span>
+      </div>
+      <div class="grid-case" id="grid-case" data-pane="case">
+        <article class="card raised stack-16 pane-case" id="pane-case">
+          <div class="stack-8">
+            <span class="eyebrow" id="case-eyebrow"></span>
+            <h1 data-i18n="caseTitle"></h1>
+          </div>
+          <div class="stack-8">
+            <span class="eyebrow" data-i18n="sitLabel"></span>
+            <div class="stack-8" id="case-text"></div>
+          </div>
+          <div class="task-box">
+            <span class="eyebrow" data-i18n="taskLabel"></span>
+            <p id="case-task"></p>
+          </div>
+          <div class="divider"></div>
+          <div class="stack-8">
+            <span class="eyebrow" data-i18n="critLabel"></span>
+            <ul class="chips" id="case-crit"></ul>
+          </div>
+          <button type="button" class="btn btn-primary block to-answer" id="to-answer">
+            <span data-i18n="toAnswer"></span>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </article>
+        <div class="card raised stack-16 pane-answer" id="pane-answer">
+          <div class="stack-8">
+            <h2><label for="answer" data-i18n="ansLabel"></label></h2>
+            <p class="muted" data-i18n="ansHint"></p>
+          </div>
+          <textarea class="textarea" id="answer" maxlength="8000" data-i18n-ph="ansPh"></textarea>
+          <div class="row between cap muted">
+            <span class="num" id="counter"></span>
+            <span data-i18n="draftNote"></span>
+          </div>
+          <div class="confirm" id="confirm" hidden>
+            <p data-i18n="confirmText"></p>
+            <div class="actions">
+              <button type="button" class="btn btn-primary" id="confirm-yes" data-i18n="confirmYes"></button>
+              <button type="button" class="btn btn-secondary" id="confirm-no" data-i18n="confirmNo"></button>
+            </div>
+          </div>
+          <button type="button" class="btn btn-primary block" id="submit-btn" disabled>
+            <span data-i18n="submit"></span>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+          <p class="hint" data-i18n="submitNote"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Baholanmoqda -->
+    <section class="view" id="v-eval" hidden>
+      <div class="card raised eval-card" id="eval-card" aria-live="polite"></div>
+    </section>
+
+    <!-- 4. Hakam bahosi -->
+    <section class="view" id="v-result" hidden>
+      <div class="stack-24" id="result-body"></div>
+    </section>
+
+    <!-- 5. Mening natijalarim -->
+    <section class="view" id="v-history" hidden>
+      <div class="card raised stack-16">
+        <div class="stack-8">
+          <h1 data-i18n="histTitle"></h1>
+          <p class="muted" data-i18n="histSub"></p>
+        </div>
+        <div id="hist-list"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer data-i18n="footer"></footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  var store = {
+    get: function (k) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+    del: function (k) { try { localStorage.removeItem(k); } catch (e) {} }
+  };
+  function pad(n) { return String(n).padStart(2, "0"); }
+  function fmtDate(iso) {
+    if (!iso) return "—";
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return "—";
+    return pad(d.getDate()) + "." + pad(d.getMonth() + 1) + "." + d.getFullYear() + ", " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+  }
+  function fmtNum(v) { return String(Math.round(v * 10) / 10).replace(".", ","); }
+  function words(s) { var t = String(s || "").trim(); return t ? t.split(/\s+/).length : 0; }
+  var ICON = {
+    check: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.8"/></svg>',
+    minus: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>',
+    alert: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9.5 17h-19z"/><path d="M12 10v4M12 17h.01"/></svg>',
+    info: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>',
+    medal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 2.5h9l-2.6 6.2h-3.8z"/><circle cx="12" cy="15" r="6.2"/><path d="M12 11.9l1 2 2.2.3-1.6 1.5.4 2.2-2-1.1-2 1.1.4-2.2-1.6-1.5 2.2-.3z"/></svg>',
+    doc: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg>',
+    shield: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.4-3.4 8-8 9-4.6-1-8-4.6-8-9V6z"/><circle cx="11.5" cy="11.5" r="2.8"/><path d="M13.6 13.6l2.2 2.2"/></svg>',
+    copy: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>',
+    down: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>',
+    refresh: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>'
+  };
+  var T = {"lat":{"brandSub":"Malakani baholash tizimi","navAria":"Boʻlimlar","langAria":"Til","themeDark":"Qorongʻi rejimga oʻtish","themeLight":"Yorugʻ rejimga oʻtish","navHistoryShort":"Natijalarim","paneCase":"Vaziyat","paneAnswer":"Javobim","toAnswer":"Javob yozishga oʻtish","fsLabel":"Matn oʻlchami","fsDec":"Matnni kichiklashtirish","fsInc":"Matnni kattalashtirish","fsReset":"Asl oʻlchamga qaytarish","themeLabel":"Mavzu","themeDarkShort":"Qorongʻi rejim","themeLightShort":"Yorugʻ rejim","navTest":"Test","navHistory":"Mening natijalarim","districtLabel":"Tuman yoki shahar","districtPh":"Tuman yoki shaharni tanlang","districtPh0":"Avval hududni tanlang","districtErr":"Tuman yoki shaharni tanlang","grpTuman":"Tumanlar","grpShahar":"Shaharlar","metaDistrict":"Tuman / shahar","heroEyebrow":"Ijtimoiy himoya tizimi xodimlarining malakasini oshirish markazi","heroTitle":"Malakani baholash: keys usuli","heroText":"Sizga amaliy vaziyat beriladi. Uni oʻqib, topshiriqqa yozma javob yozasiz. Javobingizni hakam 4 mezon boʻyicha baholaydi, natija shu botga keladi.","fact1":"1 ta keys","fact2":"40 daqiqa","fact3":"4 mezon · 20 ball","formTitle":"Maʼlumotlaringiz","fioLabel":"F.I.Sh. (familiya, ism, sharif)","fioPh":"Familiya Ism Sharif","fioHint":"Masalan: Aliyev Vali Gʻaniyevich — toʻliq yozing","fioErr":"Familiya va ismingizni toʻliq yozing","regionLabel":"Hudud","regionPh":"Hududni tanlang","regionErr":"Hududni tanlang","roleLabel":"Lavozim","rolePh":"Lavozimni tanlang","roleErr":"Lavozimni tanlang","roleHint":"Lavozimlar roʻyxati keyin toʻldiriladi","start":"Testni boshlash","startNote":"Test boshlangach, 40 daqiqalik vaqt hisoblana boshlaydi.","howTitle":"Test qanday oʻtadi","how1":"Maʼlumotlaringizni kiritib, testni boshlaysiz.","how2":"Vaziyatni oʻqib, 40 daqiqa ichida yozma javob yozasiz.","how3":"Javobni yuborasiz — hakam uni ish vaqtida 1–3 daqiqada, boshqa vaqtda 1 soat ichida baholaydi.","how4":"Hakam bahosi shu botga xabar boʻlib keladi va «Mening natijalarim» boʻlimida saqlanadi.","howNote":"Javobingiz Telegram hisobingizga bogʻlanadi: natijani faqat siz va admin koʻrasiz.","nChecking":"Tizim tekshirilmoqda…","nReady":"Tizim tayyor: AI baholash ishlaydi, natija adminga saqlanadi.","timerLabel":"Qolgan vaqt","caseEyebrow":"Keys №{n} · {title}","caseTitle":"Amaliy vaziyat","sitLabel":"Vaziyat","taskLabel":"Topshiriq","critLabel":"Javobingiz shu mezonlar boʻyicha baholanadi","ansLabel":"Sizning javobingiz","ansHint":"Vaziyatdagi aniq faktlarga tayaning: kimga qanday yordam, kim masʼul va qachongacha.","ansPh":"Javobingizni shu yerga yozing…","counter":"{n} belgi · {w} soʻz","draftNote":"Qoralama avtomatik saqlanadi — oyna yopilsa ham yoʻqolmaydi.","submit":"Javobni yuborish","submitNote":"Vaqt tugasa, javob avtomatik yuboriladi.","confirmText":"Javob yuborilgach, uni oʻzgartirib boʻlmaydi. Yuborasizmi?","confirmYes":"Ha, yuborish","confirmNo":"Qaytish","evalTitle":"Hakam javobingizni baholamoqda","evalText":"Odatda 30–60 soniya davom etadi. Claude ruxsat soʻrasa, «Allow» tugmasini bosing. Sahifani yopmang.","evalElapsed":"{s} soniya oʻtdi","errTitle":"Baholab boʻlmadi","retry":"Qayta baholash","resEyebrow":"Natija","judgeTitle":"Hakam bahosi","expertTitle":"Ekspert izohi va mezonlar boʻyicha tahlil","awarded":"Nega ball berildi","deducted":"Nega ball chegirildi","indepTitle":"Anti-plagiat va mustaqillik nazorati","cleanWord":"TOZA","indepNA":"Baholanmagan","indepCaveat":"Bu AI hakamning taxmini, isbot emas. Shubha boʻlsa, javobni admin koʻrib chiqadi.","savedOk":"Natija saqlandi va adminga yetkazildi.","savedNo":"Natija saqlanmadi. Uni yuklab olib, adminga yuboring.","btnCopy":"Matnni nusxalash","copied":"Nusxalandi","copyFail":"Nusxalab boʻlmadi — matnni qoʻlda belgilang","btnDownload":"Natijani yuklab olish","dlFail":"Yuklab olish bu oynada ishlamaydi","btnNew":"Yangi urinish","btnHistory":"Mening natijalarim","back":"Orqaga","metaFio":"F.I.Sh.","metaRegion":"Hudud","metaRole":"Lavozim","metaDate":"Sana","histTitle":"Mening natijalarim","histSub":"Barcha urinishlaringiz — yangilari tepada.","histEmpty":"Hali urinishlar yoʻq. Testni topshirgach, natijangiz shu yerda chiqadi.","histNoAcc":"Natijalarni koʻrish uchun testni Telegram bot orqali oching.","view":"Koʻrish","stDone":"Baholandi","stPending":"Baholanmoqda","stError":"Baholanmagan","fSearch":"F.I.Sh. boʻyicha qidirish","countSuffix":"{n} ta","answerTitle":"Xodim javobi","duration":"Davomiyligi","minShort":"daq","autoSub":"vaqt tugab, avtomatik yuborilgan","close":"Yopish","footer":"IHMA · Malakani baholash · Sinov versiyasi (pilot).","txtCase":"Keys","yes":"ha","no":"yoʻq","crit":["Xatarlarni aniqlash (birlamchi baholash)","Himoya omillari va kuchli tomonlar","Kompleks baholash xulosasi","Individual xizmat rejasi"],"regions":{"qr":"Qoraqalpogʻiston Respublikasi","andijon":"Andijon viloyati","buxoro":"Buxoro viloyati","fargona":"Fargʻona viloyati","jizzax":"Jizzax viloyati","xorazm":"Xorazm viloyati","namangan":"Namangan viloyati","navoiy":"Navoiy viloyati","qashqadaryo":"Qashqadaryo viloyati","samarqand":"Samarqand viloyati","sirdaryo":"Sirdaryo viloyati","surxondaryo":"Surxondaryo viloyati","toshkentv":"Toshkent viloyati","toshkentsh":"Toshkent shahri"},"roles":{"director":"Inson markazi direktori","chief":"Bosh ijtimoiy xodim","supervisor":"Supervayzer","social":"Ijtimoiy xodim — mahallada kompleks ijtimoiy xizmat koʻrsatuvchi xodim"},"rolesShort":{"director":"Markaz direktori","chief":"Bosh ijtimoiy xodim","supervisor":"Supervayzer","social":"Ijtimoiy xodim (mahalla)"},"langName":"Oʻzbekcha (lotin)","tgOnly":"Bu test Telegram bot ichida ochiladi. Botni ochib, «Testni boshlash» tugmasini bosing.","openBot":"Botni ochish","noConfig":"Tizim hali toʻliq sozlanmagan. Adminga xabar bering.","loading":"Yuklanmoqda…","netErr":"Server bilan bogʻlanib boʻlmadi. Internetni tekshirib, qayta urinib koʻring.","authErr":"Telegram tasdigʻi eskirgan. Botni yopib, qayta oching.","tryAgain":"Qayta urinish","ready":"Tayyor. Natijangiz shu botga keladi.","startErr":"Testni boshlab boʻlmadi. Maʼlumotlarni tekshirib, qayta urinib koʻring.","sending":"Javobingiz yuborilmoqda…","sendErr":"Javob yuborilmadi. Javobingiz saqlangan — internetni tekshirib, qayta yuboring.","resend":"Qayta yuborish","sentTitle":"Javobingiz qabul qilindi","sentText":"Hakam bahosi tayyor boʻlgach shu yerda chiqadi va botga xabar boʻlib keladi. Ish vaqtida odatda 1–3 daqiqa, boshqa vaqtda 1 soatgacha. Oynani yopsangiz ham boʻladi.","sentWait":"Yuborilganiga {m} daqiqa boʻldi · holat tekshirilmoqda","timeUp":"Vaqt tugadi — javobingiz avtomatik yuborildi.","evalFail":"Avtomatik baholashda muammo boʻldi. Javobingiz saqlangan, uni admin koʻrib chiqadi.","notReady":"Natija hali tayyor emas. Tayyor boʻlganda botga xabar keladi.","notFound":"Natija topilmadi."},"cyr":{"brandSub":"Малакани баҳолаш тизими","navAria":"Бўлимлар","langAria":"Тил","themeDark":"Қоронғи режимга ўтиш","themeLight":"Ёруғ режимга ўтиш","navHistoryShort":"Натижаларим","paneCase":"Вазият","paneAnswer":"Жавобим","toAnswer":"Жавоб ёзишга ўтиш","fsLabel":"Матн ўлчами","fsDec":"Матнни кичиклаштириш","fsInc":"Матнни катталаштириш","fsReset":"Асл ўлчамга қайтариш","themeLabel":"Мавзу","themeDarkShort":"Қоронғи режим","themeLightShort":"Ёруғ режим","navTest":"Тест","navHistory":"Менинг натижаларим","districtLabel":"Туман ёки шаҳар","districtPh":"Туман ёки шаҳарни танланг","districtPh0":"Аввал ҳудудни танланг","districtErr":"Туман ёки шаҳарни танланг","grpTuman":"Туманлар","grpShahar":"Шаҳарлар","metaDistrict":"Туман / шаҳар","heroEyebrow":"Ижтимоий ҳимоя тизими ходимларининг малакасини ошириш маркази","heroTitle":"Малакани баҳолаш: кейс усули","heroText":"Сизга амалий вазият берилади. Уни ўқиб, топшириққа ёзма жавоб ёзасиз. Жавобингизни ҳакам 4 мезон бўйича баҳолайди, натижа шу ботга келади.","fact1":"1 та кейс","fact2":"40 дақиқа","fact3":"4 мезон · 20 балл","formTitle":"Маълумотларингиз","fioLabel":"Ф.И.Ш. (фамилия, исм, шариф)","fioPh":"Фамилия Исм Шариф","fioHint":"Масалан: Алиев Вали Ғаниевич — тўлиқ ёзинг","fioErr":"Фамилия ва исмингизни тўлиқ ёзинг","regionLabel":"Ҳудуд","regionPh":"Ҳудудни танланг","regionErr":"Ҳудудни танланг","roleLabel":"Лавозим","rolePh":"Лавозимни танланг","roleErr":"Лавозимни танланг","roleHint":"Лавозимлар рўйхати кейин тўлдирилади","start":"Тестни бошлаш","startNote":"Тест бошлангач, 40 дақиқалик вақт ҳисоблана бошлайди.","howTitle":"Тест қандай ўтади","how1":"Маълумотларингизни киритиб, тестни бошлайсиз.","how2":"Вазиятни ўқиб, 40 дақиқа ичида ёзма жавоб ёзасиз.","how3":"Жавобни юборасиз — ҳакам уни иш вақтида 1–3 дақиқада, бошқа вақтда 1 соат ичида баҳолайди.","how4":"Ҳакам баҳоси шу ботга хабар бўлиб келади ва «Менинг натижаларим» бўлимида сақланади.","howNote":"Жавобингиз Telegram ҳисобингизга боғланади: натижани фақат сиз ва админ кўради.","nChecking":"Тизим текширилмоқда…","nReady":"Тизим тайёр: AI баҳолаш ишлайди, натижа админга сақланади.","timerLabel":"Қолган вақт","caseEyebrow":"Кейс №{n} · {title}","caseTitle":"Амалий вазият","sitLabel":"Вазият","taskLabel":"Топшириқ","critLabel":"Жавобингиз шу мезонлар бўйича баҳоланади","ansLabel":"Сизнинг жавобингиз","ansHint":"Вазиятдаги аниқ фактларга таянинг: кимга қандай ёрдам, ким масъул ва қачонгача.","ansPh":"Жавобингизни шу ерга ёзинг…","counter":"{n} белги · {w} сўз","draftNote":"Қоралама автоматик сақланади — ойна ёпилса ҳам йўқолмайди.","submit":"Жавобни юбориш","submitNote":"Вақт тугаса, жавоб автоматик юборилади.","confirmText":"Жавоб юборилгач, уни ўзгартириб бўлмайди. Юборасизми?","confirmYes":"Ҳа, юбориш","confirmNo":"Қайтиш","evalTitle":"Ҳакам жавобингизни баҳоламоқда","evalText":"Одатда 30–60 сония давом этади. Claude рухсат сўраса, «Allow» тугмасини босинг. Саҳифани ёпманг.","evalElapsed":"{s} сония ўтди","errTitle":"Баҳолаб бўлмади","retry":"Қайта баҳолаш","resEyebrow":"Натижа","judgeTitle":"Ҳакам баҳоси","expertTitle":"Эксперт изоҳи ва мезонлар бўйича таҳлил","awarded":"Нега балл берилди","deducted":"Нега балл чегирилди","indepTitle":"Анти-плагиат ва мустақиллик назорати","cleanWord":"ТОЗА","indepNA":"Баҳоланмаган","indepCaveat":"Бу AI ҳакамнинг тахмини, исбот эмас. Шубҳа бўлса, жавобни админ кўриб чиқади.","savedOk":"Натижа сақланди ва админга етказилди.","savedNo":"Натижа сақланмади. Уни юклаб олиб, админга юборинг.","btnCopy":"Матнни нусхалаш","copied":"Нусхаланди","copyFail":"Нусхалаб бўлмади — матнни қўлда белгиланг","btnDownload":"Натижани юклаб олиш","dlFail":"Юклаб олиш бу ойнада ишламайди","btnNew":"Янги уриниш","btnHistory":"Менинг натижаларим","back":"Орқага","metaFio":"Ф.И.Ш.","metaRegion":"Ҳудуд","metaRole":"Лавозим","metaDate":"Сана","histTitle":"Менинг натижаларим","histSub":"Барча уринишларингиз — янгилари тепада.","histEmpty":"Ҳали уринишлар йўқ. Тестни топширгач, натижангиз шу ерда чиқади.","histNoAcc":"Натижаларни кўриш учун тестни Telegram бот орқали очинг.","view":"Кўриш","stDone":"Баҳоланди","stPending":"Баҳоланмоқда","stError":"Баҳоланмаган","fSearch":"Ф.И.Ш. бўйича қидириш","countSuffix":"{n} та","answerTitle":"Ходим жавоби","duration":"Давомийлиги","minShort":"дақ","autoSub":"вақт тугаб, автоматик юборилган","close":"Ёпиш","footer":"IHMA · Малакани баҳолаш · Синов версияси (пилот).","txtCase":"Кейс","yes":"ҳа","no":"йўқ","crit":["Хатарларни аниқлаш (бирламчи баҳолаш)","Ҳимоя омиллари ва кучли томонлар","Комплекс баҳолаш хулосаси","Индивидуал хизмат режаси"],"regions":{"qr":"Қорақалпоғистон Республикаси","andijon":"Андижон вилояти","buxoro":"Бухоро вилояти","fargona":"Фарғона вилояти","jizzax":"Жиззах вилояти","xorazm":"Хоразм вилояти","namangan":"Наманган вилояти","navoiy":"Навоий вилояти","qashqadaryo":"Қашқадарё вилояти","samarqand":"Самарқанд вилояти","sirdaryo":"Сирдарё вилояти","surxondaryo":"Сурхондарё вилояти","toshkentv":"Тошкент вилояти","toshkentsh":"Тошкент шаҳри"},"roles":{"director":"Инсон маркази директори","chief":"Бош ижтимоий ходим","supervisor":"Супервайзер","social":"Ижтимоий ходим — маҳаллада комплекс ижтимоий хизмат кўрсатувчи ходим"},"rolesShort":{"director":"Марказ директори","chief":"Бош ижтимоий ходим","supervisor":"Супервайзер","social":"Ижтимоий ходим (маҳалла)"},"langName":"Ўзбекча (кирилл)","tgOnly":"Бу тест Telegram бот ичида очилади. Ботни очиб, «Тестни бошлаш» тугмасини босинг.","openBot":"Ботни очиш","noConfig":"Тизим ҳали тўлиқ созланмаган. Админга хабар беринг.","loading":"Юкланмоқда…","netErr":"Сервер билан боғланиб бўлмади. Интернетни текшириб, қайта уриниб кўринг.","authErr":"Telegram тасдиғи эскирган. Ботни ёпиб, қайта очинг.","tryAgain":"Қайта уриниш","ready":"Тайёр. Натижангиз шу ботга келади.","startErr":"Тестни бошлаб бўлмади. Маълумотларни текшириб, қайта уриниб кўринг.","sending":"Жавобингиз юборилмоқда…","sendErr":"Жавоб юборилмади. Жавобингиз сақланган — интернетни текшириб, қайта юборинг.","resend":"Қайта юбориш","sentTitle":"Жавобингиз қабул қилинди","sentText":"Ҳакам баҳоси тайёр бўлгач шу ерда чиқади ва ботга хабар бўлиб келади. Иш вақтида одатда 1–3 дақиқа, бошқа вақтда 1 соатгача. Ойнани ёпсангиз ҳам бўлади.","sentWait":"Юборилганига {m} дақиқа бўлди · ҳолат текширилмоқда","timeUp":"Вақт тугади — жавобингиз автоматик юборилди.","evalFail":"Автоматик баҳолашда муаммо бўлди. Жавобингиз сақланган, уни админ кўриб чиқади.","notReady":"Натижа ҳали тайёр эмас. Тайёр бўлганда ботга хабар келади.","notFound":"Натижа топилмади."},"ru":{"brandSub":"Система оценки квалификации","navAria":"Разделы","langAria":"Язык","themeDark":"Включить тёмную тему","themeLight":"Включить светлую тему","navHistoryShort":"Результаты","paneCase":"Ситуация","paneAnswer":"Мой ответ","toAnswer":"Перейти к ответу","fsLabel":"Размер текста","fsDec":"Уменьшить текст","fsInc":"Увеличить текст","fsReset":"Вернуть исходный размер","themeLabel":"Тема","themeDarkShort":"Тёмная тема","themeLightShort":"Светлая тема","navTest":"Тест","navHistory":"Мои результаты","districtLabel":"Район или город","districtPh":"Выберите район или город","districtPh0":"Сначала выберите регион","districtErr":"Выберите район или город","grpTuman":"Районы","grpShahar":"Города","metaDistrict":"Район / город","heroEyebrow":"Центр повышения квалификации работников системы социальной защиты","heroTitle":"Оценка квалификации: метод кейсов","heroText":"Вы получите практическую ситуацию. Прочитайте её и напишите письменный ответ на задание. Эксперт оценит ответ по 4 критериям, результат придёт в этот бот.","fact1":"1 кейс","fact2":"40 минут","fact3":"4 критерия · 20 баллов","formTitle":"Ваши данные","fioLabel":"Ф.И.О. (фамилия, имя, отчество)","fioPh":"Фамилия Имя Отчество","fioHint":"Например: Алиев Вали Ганиевич — полностью","fioErr":"Укажите фамилию и имя полностью","regionLabel":"Регион","regionPh":"Выберите регион","regionErr":"Выберите регион","roleLabel":"Должность","rolePh":"Выберите должность","roleErr":"Выберите должность","roleHint":"Список должностей будет дополнен","start":"Начать тест","startNote":"После начала теста запустится таймер на 40 минут.","howTitle":"Как проходит тест","how1":"Вы вводите свои данные и начинаете тест.","how2":"Читаете ситуацию и в течение 40 минут пишете ответ.","how3":"Отправляете ответ — в рабочее время эксперт оценивает его за 1–3 минуты, в остальное время — в течение часа.","how4":"Оценка эксперта придёт сообщением в этот бот и сохранится в разделе «Мои результаты».","howNote":"Ответ привязан к вашему аккаунту Telegram: результат видите только вы и администратор.","nChecking":"Проверка системы…","nReady":"Система готова: ИИ-оценка работает, результат сохранится для администратора.","timerLabel":"Осталось","caseEyebrow":"Кейс №{n} · {title}","caseTitle":"Практическая ситуация","sitLabel":"Ситуация","taskLabel":"Задание","critLabel":"Ответ оценивается по этим критериям","ansLabel":"Ваш ответ","ansHint":"Опирайтесь на конкретные факты ситуации: кому какая помощь, кто ответственный и в какие сроки.","ansPh":"Напишите ответ здесь…","counter":"{n} знаков · {w} слов","draftNote":"Черновик сохраняется автоматически и не пропадёт, если окно закроется.","submit":"Отправить ответ","submitNote":"Когда время истечёт, ответ отправится автоматически.","confirmText":"После отправки ответ изменить нельзя. Отправить?","confirmYes":"Да, отправить","confirmNo":"Вернуться","evalTitle":"Эксперт оценивает ваш ответ","evalText":"Обычно это занимает 30–60 секунд. Если Claude запросит разрешение, нажмите «Allow». Не закрывайте страницу.","evalElapsed":"Прошло {s} с","errTitle":"Не удалось оценить","retry":"Оценить заново","resEyebrow":"Результат","judgeTitle":"Оценка эксперта","expertTitle":"Комментарий эксперта и анализ по критериям","awarded":"За что начислены баллы","deducted":"За что сняты баллы","indepTitle":"Антиплагиат и контроль самостоятельности","cleanWord":"ЧИСТО","indepNA":"Не оценено","indepCaveat":"Это предположение ИИ-эксперта, а не доказательство. При сомнениях администратор проверит ответ сам.","savedOk":"Результат сохранён и передан администратору.","savedNo":"Результат не сохранён. Скачайте его и отправьте администратору.","btnCopy":"Копировать текст","copied":"Скопировано","copyFail":"Не удалось скопировать — выделите текст вручную","btnDownload":"Скачать результат","dlFail":"Скачивание недоступно в этом окне","btnNew":"Новая попытка","btnHistory":"Мои результаты","back":"Назад","metaFio":"Ф.И.О.","metaRegion":"Регион","metaRole":"Должность","metaDate":"Дата","histTitle":"Мои результаты","histSub":"Все ваши попытки — новые сверху.","histEmpty":"Попыток пока нет. После теста результат появится здесь.","histNoAcc":"Чтобы увидеть результаты, откройте тест через Telegram-бота.","view":"Открыть","stDone":"Оценено","stPending":"Оценивается","stError":"Не оценено","fSearch":"Поиск по Ф.И.О.","countSuffix":"{n} шт.","answerTitle":"Ответ сотрудника","duration":"Длительность","minShort":"мин","autoSub":"время истекло, отправлено автоматически","close":"Закрыть","footer":"IHMA · Оценка квалификации · Пилотная версия.","txtCase":"Кейс","yes":"да","no":"нет","crit":["Выявление рисков (первичная оценка)","Защитные факторы и сильные стороны","Заключение комплексной оценки","Индивидуальный план услуг"],"regions":{"qr":"Республика Каракалпакстан","andijon":"Андижанская область","buxoro":"Бухарская область","fargona":"Ферганская область","jizzax":"Джизакская область","xorazm":"Хорезмская область","namangan":"Наманганская область","navoiy":"Навоийская область","qashqadaryo":"Кашкадарьинская область","samarqand":"Самаркандская область","sirdaryo":"Сырдарьинская область","surxondaryo":"Сурхандарьинская область","toshkentv":"Ташкентская область","toshkentsh":"город Ташкент"},"roles":{"director":"Директор центра «Инсон»","chief":"Главный социальный работник","supervisor":"Супервайзер","social":"Социальный работник — специалист, оказывающий комплексные социальные услуги в махалле"},"rolesShort":{"director":"Директор центра","chief":"Главный соцработник","supervisor":"Супервайзер","social":"Соцработник (махалля)"},"langName":"Русский","tgOnly":"Этот тест открывается внутри Telegram-бота. Откройте бота и нажмите «Начать тест».","openBot":"Открыть бота","noConfig":"Система ещё не настроена. Сообщите администратору.","loading":"Загрузка…","netErr":"Не удалось связаться с сервером. Проверьте интернет и попробуйте ещё раз.","authErr":"Подтверждение Telegram устарело. Закройте бота и откройте снова.","tryAgain":"Повторить","ready":"Готово. Результат придёт в этот бот.","startErr":"Не удалось начать тест. Проверьте данные и попробуйте ещё раз.","sending":"Ответ отправляется…","sendErr":"Ответ не отправлен. Он сохранён — проверьте интернет и отправьте снова.","resend":"Отправить снова","sentTitle":"Ваш ответ принят","sentText":"Оценка эксперта появится здесь и придёт сообщением в бот. В рабочее время обычно 1–3 минуты, в остальное время — до часа. Окно можно закрыть.","sentWait":"Отправлено {m} мин. назад · проверяем статус","timeUp":"Время вышло — ответ отправлен автоматически.","evalFail":"При автоматической оценке возникла проблема. Ответ сохранён, его рассмотрит администратор.","notReady":"Результат ещё не готов. Когда будет готов, придёт сообщение в бот.","notFound":"Результат не найден."}};
+  var REGION_IDS = ["qr","andijon","buxoro","fargona","jizzax","xorazm","namangan","navoiy","qashqadaryo","samarqand","sirdaryo","surxondaryo","toshkentv","toshkentsh"];
+  var ROLE_IDS = ["director","chief","supervisor","social"];
+  var DISTRICTS = {"andijon":[["1703203","Andijon tumani","Андижон тумани","Андижанский район",0],["1703224","Asaka tumani","Асака тумани","Асакинский район",0],["1703206","Baliqchi tumani","Балиқчи тумани","Балыкчинский район",0],["1703209","Boʻston tumani","Бўстон тумани","Бустонский район",0],["1703210","Buloqboshi tumani","Булоқбоши тумани","Булакбашинский район",0],["1703214","Izboskan tumani","Избоскан тумани","Избасканский район",0],["1703211","Jalaquduq tumani","Жалақудуқ тумани","Джалалкудукский район",0],["1703227","Marxamat tumani","Мархамат тумани","Мархаматский район",0],["1703202","Oltinkoʻl tumani","Олтинкўл тумани","Алтынкульский район",0],["1703232","Paxtaobod tumani","Пахтаобод тумани","Пахтаабадский район",0],["1703220","Qoʻrgʻontepa tumani","Қўрғонтепа тумани","Кургантепинский район",0],["1703230","Shahrixon tumani","Шаҳрихон тумани","Шахриханский район",0],["1703217","Ulugʻnor tumani","Улуғнор тумани","Улугнорский район",0],["1703236","Xoʻjaobod tumani","Хўжаобод тумани","Ходжаабадский район",0],["1703401","Andijon shahri","Андижон шаҳри","г. Андижан",1],["1703408","Xonobod shahri","Хонобод шаҳри","г. Ханабад",1]],"buxoro":[["1706207","Buxoro tumani","Бухоро тумани","Бухарский район",0],["1706215","Gʻijduvon tumani","Ғиждувон тумани","Гиждуванский район",0],["1706246","Jondor tumani","Жондор тумани","Жандарский район",0],["1706219","Kogon tumani","Когон тумани","Каганский район",0],["1706204","Olot tumani","Олот тумани","Алатский район",0],["1706240","Peshku tumani","Пешку тумани","Пешкунский район",0],["1706230","Qorakoʻl tumani","Қоракўл тумани","Каракульский район",0],["1706232","Qorovulbozor tumani","Қоровулбозор тумани","Караулбазарский район",0],["1706242","Romitan tumani","Ромитан тумани","Ромитанский район",0],["1706258","Shofirkon tumani","Шофиркон тумани","Шафирканский район",0],["1706212","Vobkent tumani","Вобкент тумани","Вабкентский район",0],["1706401","Buxoro shahri","Бухоро шаҳри","г. Бухара",1],["1706403","Kogon shahri","Когон шаҳри","г. Каган",1]],"jizzax":[["1708201","Arnasoy tumani","Арнасой тумани","Арнасайский район",0],["1708204","Baxmal tumani","Бахмал тумани","Бахмальский район",0],["1708215","Doʻstlik tumani","Дўстлик тумани","Дустликский район",0],["1708235","Forish tumani","Фориш тумани","Фаришский район",0],["1708209","Gʻallaorol tumani","Ғаллаорол тумани","Галляаральский район",0],["1708223","Mirzachoʻl tumani","Мирзачўл тумани","Мирзачульский район",0],["1708228","Paxtakor tumani","Пахтакор тумани","Пахтакорский район",0],["1708212","Sharof Rashidov tumani","Шароф Рашидов тумани","Шараф-Рашидовский район",0],["1708237","Yangiobod tumani","Янгиобод тумани","Янгиабадский район",0],["1708225","Zafarobod tumani","Зафаробод тумани","Зафарабадский район",0],["1708220","Zarbdor tumani","Зарбдор тумани","Зарбдарский район",0],["1708218","Zomin tumani","Зомин тумани","Зааминский район",0],["1708401","Jizzax shahri","Жиззах шаҳри","г. Джизак",1]],"qashqadaryo":[["1710242","Chiroqchi tumani","Чироқчи тумани","Чиракчинский район",0],["1710212","Dehqonobod tumani","Деҳқонобод тумани","Дехканабадский район",0],["1710207","Gʻuzor tumani","Ғузор тумани","Гузарский район",0],["1710237","Kasbi tumani","Касби тумани","Касбинский район",0],["1710232","Kitob tumani","Китоб тумани","Китабский район",0],["1710229","Koson tumani","Косон тумани","Касанский район",0],["1710240","Koʻkdala tumani","Кўкдала тумани","Кукдалинский район",0],["1710233","Mirishkor tumani","Миришкор тумани","Миришкорский район",0],["1710234","Muborak tumani","Муборак тумани","Мубарекский район",0],["1710235","Nishon tumani","Нишон тумани","Нишанский район",0],["1710220","Qamashi tumani","Қамаши тумани","Камашинский район",0],["1710224","Qarshi tumani","Қарши тумани","Каршинский район",0],["1710245","Shahrisabz tumani","Шаҳрисабз тумани","Шахрисабзский район",0],["1710250","Yakkabogʻ tumani","Яккабоғ тумани","Яккабагский район",0],["1710401","Qarshi shahri","Қарши шаҳри","г. Карши",1],["1710405","Shahrisabz shahri","Шаҳрисабз шаҳри","г. Шахрисабз",1]],"navoiy":[["1712234","Karmana tumani","Кармана тумани","Карманинский район",0],["1712211","Konimex tumani","Конимех тумани","Канимехский район",0],["1712230","Navbahor tumani","Навбаҳор тумани","Навбахорский район",0],["1712238","Nurota tumani","Нурота тумани","Нуратинский район",0],["1712216","Qiziltepa tumani","Қизилтепа тумани","Кызылтепинский район",0],["1712244","Tomdi tumani","Томди тумани","Тамдынский район",0],["1712248","Uchquduq tumani","Учқудуқ тумани","Учкудукский район",0],["1712251","Xatirchi tumani","Хатирчи тумани","Хатырчинский район",0],["1712412","Gʻozgʻon shahri","Ғозғон шаҳри","г. Газган",1],["1712401","Navoiy shahri","Навоий шаҳри","г. Навои",1],["1712408","Zarafshon shahri","Зарафшон шаҳри","г. Зарафшан",1]],"namangan":[["1714236","Chortoq tumani","Чортоқ тумани","Чартакский район",0],["1714237","Chust tumani","Чуст тумани","Чустский район",0],["1714401365","Davlatobod tumani","Давлатобод тумани","Давлатабадский район",0],["1714207","Kosonsoy tumani","Косонсой тумани","Касансайский район",0],["1714204","Mingbuloq tumani","Мингбулоқ тумани","Мингбулакский район",0],["1714212","Namangan tumani","Наманган тумани","Наманганский район",0],["1714216","Norin tumani","Норин тумани","Нарынский район",0],["1714219","Pop tumani","Поп тумани","Папский район",0],["1714224","Toʻraqoʻrgʻon tumani","Тўрақўрғон тумани","Туракурганский район",0],["1714234","Uchqoʻrgʻon tumani","Учқўрғон тумани","Учкурганский район",0],["1714229","Uychi tumani","Уйчи тумани","Уйчинский район",0],["1714401367","Yangi Namangan tumani","Янги Наманган тумани","Янги Наманганский район",0],["1714242","Yangiqoʻrgʻon tumani","Янгиқўрғон тумани","Янгикурганский район",0],["1714401","Namangan shahri","Наманган шаҳри","г. Наманган",1]],"samarqand":[["1718206","Bulungʻur tumani","Булунғур тумани","Булунгурский район",0],["1718212","Ishtixon tumani","Иштихон тумани","Иштыханский район",0],["1718209","Jomboy tumani","Жомбой тумани","Джамбайский район",0],["1718215","Kattaqoʻrgʻon tumani","Каттақўрғон тумани","Каттакурганский район",0],["1718218","Narpay tumani","Нарпай тумани","Нарпайский район",0],["1718235","Nurobod tumani","Нуробод тумани","Нурабадский район",0],["1718203","Oqdaryo tumani","Оқдарё тумани","Акдарьинский район",0],["1718227","Pastdargʻom tumani","Пастдарғом тумани","Пастдаргомский район",0],["1718230","Paxtachi tumani","Пахтачи тумани","Пахтачийский район",0],["1718224","Payariq tumani","Паяриқ тумани","Пайарыкский район",0],["1718216","Qoʻshrabot tumani","Қўшработ тумани","Кушрабадский район",0],["1718233","Samarqand tumani","Самарқанд тумани","Самаркандский район",0],["1718238","Toyloq tumani","Тойлоқ тумани","Тайлакский район",0],["1718236","Urgut tumani","Ургут тумани","Ургутский район",0],["1718406","Kattaqoʻrgʻon shahri","Каттақўрғон шаҳри","г. Каттакурган",1],["1718401","Samarqand shahri","Самарқанд шаҳри","г. Самарканд",1]],"sirdaryo":[["1724212","Boyovut tumani","Боёвут тумани","Баяутский район",0],["1724220","Guliston tumani","Гулистон тумани","Гулистанский район",0],["1724228","Mirzaobod tumani","Мирзаобод тумани","Мирзаабадский район",0],["1724206","Oqoltin tumani","Оқолтин тумани","Акалтынский район",0],["1724226","Sardoba tumani","Сардоба тумани","Сардобинский район",0],["1724216","Sayxunobod tumani","Сайхунобод тумани","Сайхунабадский район",0],["1724231","Sirdaryo tumani","Сирдарё тумани","Сырдарьинский район",0],["1724235","Xovos tumani","Ховос тумани","Хавастский район",0],["1724414","Baxt shahri","Бахт шаҳри","г. Бахт",1],["1724401","Guliston shahri","Гулистон шаҳри","г. Гулистан",1],["1724410","Shirin shahri","Ширин шаҳри","г. Ширин",1],["1724413","Yangiyer shahri","Янгиер шаҳри","г. Янгиер",1]],"toshkentsh":[["1726264","Bektemir tumani","Бектемир тумани","Бектемирский район",0],["1726294","Chilonzor tumani","Чилонзор тумани","Чиланзарский район",0],["1726273","Mirobod tumani","Миробод тумани","Мирабадский район",0],["1726269","Mirzo Ulugʻbek tumani","Мирзо Улуғбек тумани","Мирзо-Улугбекский район",0],["1726280","Olmazor tumani","Олмазор тумани","Алмазарский район",0],["1726277","Shayxontohur tumani","Шайхонтоҳур тумани","Шайхантахурский район",0],["1726283","Sirgʻali tumani","Сирғали тумани","Сергелийский район",0],["1726262","Uchtepa tumani","Учтепа тумани","Учтепинский район",0],["1726287","Yakkasaroy tumani","Яккасарой тумани","Яккасарайский район",0],["1726292","Yangihayot tumani","Янгиҳаёт тумани","Янгихаётский район",0],["1726290","Yashnobod tumani","Яшнобод тумани","Яшнабадский район",0],["1726266","Yunusobod tumani","Юнусобод тумани","Юнусабадский район",0]],"toshkentv":[["1727220","Bekobod tumani","Бекобод тумани","Бекабадский район",0],["1727228","Boʻka tumani","Бўка тумани","Букинский район",0],["1727224","Boʻstonliq tumani","Бўстонлиқ тумани","Бостанлыкский район",0],["1727256","Chinoz tumani","Чиноз тумани","Чиназский район",0],["1727212","Ohangaron tumani","Оҳангарон тумани","Ахангаранский район",0],["1727206","Oqqoʻrgʻon tumani","Оққўрғон тумани","Аккурганский район",0],["1727253","Oʻrtachirchiq tumani","Ўртачирчиқ тумани","Уртачирчикский район",0],["1727249","Parkent tumani","Паркент тумани","Паркентский район",0],["1727250","Piskent tumani","Пискент тумани","Пскентский район",0],["1727248","Qibray tumani","Қибрай тумани","Кибрайский район",0],["1727233","Quyichirchiq tumani","Қуйичирчиқ тумани","Куйичирчикский район",0],["1727265","Toshkent tumani","Тошкент тумани","Ташкентский район",0],["1727259","Yangiyoʻl tumani","Янгийўл тумани","Янгиюльский район",0],["1727239","Yuqorichirchiq tumani","Юқоричирчиқ тумани","Юкоричирчикский район",0],["1727237","Zangiota tumani","Зангиота тумани","Зангиатинский район",0],["1727407","Angren shahri","Ангрен шаҳри","г. Ангрен",1],["1727413","Bekobod shahri","Бекобод шаҳри","г. Бекабад",1],["1727419","Chirchiq shahri","Чирчиқ шаҳри","г. Чирчик",1],["1727401","Nurafshon shahri","Нурафшон шаҳри","г. Нурафшон",1],["1727415","Ohangaron shahri","Оҳангарон шаҳри","г. Ахангаран",1],["1727404","Olmaliq shahri","Олмалиқ шаҳри","г. Алмалык",1],["1727424","Yangiyoʻl shahri","Янгийўл шаҳри","г. Янгиюль",1]],"fargona":[["1730215","Beshariq tumani","Бешариқ тумани","Бешарыкский район",0],["1730209","Bogʻdod tumani","Боғдод тумани","Багдадский район",0],["1730212","Buvayda tumani","Бувайда тумани","Бувайдинский район",0],["1730236","Dangʻara tumani","Данғара тумани","Дангаринский район",0],["1730233","Fargʻona tumani","Фарғона тумани","Ферганский район",0],["1730238","Furqat tumani","Фурқат тумани","Фуркатский район",0],["1730203","Oltiariq tumani","Олтиариқ тумани","Алтыарыкский район",0],["1730230","Oʻzbekiston tumani","Ўзбекистон тумани","Узбекистанский район",0],["1730206","Qoʻshtepa tumani","Қўштепа тумани","Куштепинский район",0],["1730218","Quva tumani","Қува тумани","Кувинский район",0],["1730224","Rishton tumani","Риштон тумани","Риштанский район",0],["1730226","Soʻx tumani","Сўх тумани","Сохский район",0],["1730227","Toshloq tumani","Тошлоқ тумани","Ташлакский район",0],["1730221","Uchkoʻprik tumani","Учкўприк тумани","Учкуприкский район",0],["1730242","Yozyovon tumani","Ёзёвон тумани","Язъяванский район",0],["1730401","Fargʻona shahri","Фарғона шаҳри","г. Фергана",1],["1730412","Margʻilon shahri","Марғилон шаҳри","г. Маргилан",1],["1730405","Qoʻqon shahri","Қўқон шаҳри","г. Коканд",1],["1730408","Quvasoy shahri","Қувасой шаҳри","г. Кувасай",1]],"xorazm":[["1733204","Bogʻot tumani","Боғот тумани","Багатский район",0],["1733208","Gurlan tumani","Гурлан тумани","Гурленский район",0],["1733212","Qoʻshkoʻpir tumani","Қўшкўпир тумани","Кошкупырский район",0],["1733230","Shovot tumani","Шовот тумани","Шаватский район",0],["1733221","Tuproqqalʼa tumani","Тупроққалъа тумани","Тупроккалинский район",0],["1733217","Urganch tumani","Урганч тумани","Ургенчский район",0],["1733220","Xazorasp tumani","Хазорасп тумани","Хазараспский район",0],["1733226","Xiva tumani","Хива тумани","Хивинский район",0],["1733223","Xonqa tumani","Хонқа тумани","Ханкинский район",0],["1733233","Yangiariq tumani","Янгиариқ тумани","Янгиарыкский район",0],["1733236","Yangibozor tumani","Янгибозор тумани","Янгибазарский район",0],["1733401","Urganch shahri","Урганч шаҳри","г. Ургенч",1],["1733406","Xiva shahri","Хива шаҳри","г. Хива",1]],"qr":[["1735204","Amudaryo tumani","Амударё тумани","Амударьинский район",0],["1735207","Beruniy tumani","Беруний тумани","Берунийский район",0],["1735209","Boʻzatov tumani","Бўзатов тумани","Бузатовский район",0],["1735240","Chimboy tumani","Чимбой тумани","Чимбайский район",0],["1735250","Ellikqalʼa tumani","Элликқалъа тумани","Элликкалинский район",0],["1735212","Kegeyli tumani","Кегейли тумани","Кегейлийский район",0],["1735222","Moʻynoq tumani","Мўйноқ тумани","Муйнакский район",0],["1735225","Nukus tumani","Нукус тумани","Нукусский район",0],["1735218","Qanlikoʻl tumani","Қанликўл тумани","Канлыкульский район",0],["1735211","Qoraoʻzak tumani","Қораўзак тумани","Караузякский район",0],["1735215","Qoʻngʻirot tumani","Қўнғирот тумани","Кунградский район",0],["1735243","Shumanay tumani","Шуманай тумани","Шуманайский район",0],["1735228","Taxiatosh tumani","Тахиатош тумани","Тахиаташский район",0],["1735230","Taxtakoʻpir tumani","Тахтакўпир тумани","Тахтакупырский район",0],["1735233","Toʻrtkoʻl tumani","Тўрткўл тумани","Турткульский район",0],["1735236","Xoʻjayli tumani","Хўжайли тумани","Ходжейлийский район",0],["1735401","Nukus shahri","Нукус шаҳри","г. Нукус",1]],"surxondaryo":[["1722202","Angor tumani","Ангор тумани","Ангорский район",0],["1722203","Bandixon tumani","Бандихон тумани","Бандиханский район",0],["1722204","Boysun tumani","Бойсун тумани","Байсунский район",0],["1722210","Denov tumani","Денов тумани","Денауский район",0],["1722212","Jarqoʻrgʻon tumani","Жарқўрғон тумани","Джаркурганский район",0],["1722207","Muzrabot tumani","Музработ тумани","Музрабадский район",0],["1722201","Oltinsoy tumani","Олтинсой тумани","Алтынсайский район",0],["1722215","Qiziriq tumani","Қизириқ тумани","Кизирикский район",0],["1722214","Qumqoʻrgʻon tumani","Қумқўрғон тумани","Кумкурганский район",0],["1722217","Sariosiyo tumani","Сариосиё тумани","Сариасийский район",0],["1722223","Sherobod tumani","Шеробод тумани","Шерабадский район",0],["1722226","Shoʻrchi tumani","Шўрчи тумани","Шурчинский район",0],["1722220","Termiz tumani","Термиз тумани","Термезский район",0],["1722221","Uzun tumani","Узун тумани","Узунский район",0],["1722401","Termiz shahri","Термиз шаҳри","г. Термез",1]]};
+  var CFG = {"minutes":40,"perCrit":5,"max":20};
+  var TASK = {"cyr":"Бирламчи баҳолашда хатар ва ҳимояни аниқлаб, комплекс баҳолаш ўтказиб, индивидуал хизмат режаларини қўйинг.","lat":"Birlamchi baholashda xatar va himoyani aniqlab, kompleks baholash oʻtkazib, individual xizmat rejalarini qoʻying.","ru":"В ходе первичной оценки выявите риски и защитные факторы, проведите комплексную оценку и составьте индивидуальный план услуг."};
+  var CASES = [{"id":"k1-mavluda","n":1,"title":{"lat":"Mavluda va oʻgʻli","cyr":"Мавлуда ва ўғли","ru":"Мавлуда и её сын"},"text":{"cyr":["Мавлуда 29 ёш, 7 ёшли ўғли билан маҳалланинг чекка қисмида ижарага олинган бир хонада яшайди. У яқинда турмуш ўртоғидан ажрашгач, бошқа ҳудудга кўчиб ўтган. Ҳозирда унинг доимий иш-жойи мавжуд эмас ва уйида вақти-вақти билан тикувчилик қилиб, оз миқдорда даромад топади. Сўнгги бир ой давомида унинг ўғли мактабнинг бир неча муддат қолдириб юборган. Қўшнилардан бири ижтимоий ходимга Мавлуда «ҳаёт қийинчиликларини яхши уддалай олмаяпти» ва «доим ёрдам сўраб юради» деб айтган.","Биринчи ташриф вақтида Мавлуда ўзини чарчаганини, ижара ҳақини тўлашдан хавотирда эканини ва яшаб турган хонасидан айрилиб қолишдан қўрқаётганини айтади.","Шунингдек, у ўғли тез-тез касал бўлиб туришини ва болага қарашда мунтазам ёрдам берадиган яқин кишиси йўқлигини маълум қилади.","У яна қайси нафақалар ёки хизматларга мурожаат қилиш ҳуқуқига эга эканини ҳар доим ҳам яхши тушунмаслигини айтади.","Шу билан бирга, Мавлуда хонани озода сақлайди, ўғлига меҳр билан муомала қилади ва унинг мактабда ўқишни давом эттиришини ҳамда «яхшироқ келажакка эга бўлишини» исташини таъкидлайди.","Суҳбат давомида ўғли онасига яқин юради. Аввалига у жим туради, кейинчалик эса мактабни яхши кўришини ва унга тез-тез боришни хоҳлашини айтади.","Мавлуда ёрдамни қабул қилишга тайёрлигини билдиради, аммо маҳалладаги одамлар уни «ёмон она» деб ўйлашларини истамаслигини ҳам қўшимча қилади."],"lat":["Mavluda 29 yosh, 7 yoshli oʻgʻli bilan mahallaning chekka qismida ijaraga olingan bir xonada yashaydi. U yaqinda turmush oʻrtogʻidan ajrashgach, boshqa hududga koʻchib oʻtgan. Hozirda uning doimiy ish-joyi mavjud emas va uyida vaqti-vaqti bilan tikuvchilik qilib, oz miqdorda daromad topadi. Soʻnggi bir oy davomida uning oʻgʻli maktabning bir necha muddat qoldirib yuborgan. Qoʻshnilardan biri ijtimoiy xodimga Mavluda «hayot qiyinchiliklarini yaxshi uddalay olmayapti» va «doim yordam soʻrab yuradi» deb aytgan.","Birinchi tashrif vaqtida Mavluda oʻzini charchaganini, ijara haqini toʻlashdan xavotirda ekanini va yashab turgan xonasidan ayrilib qolishdan qoʻrqayotganini aytadi.","Shuningdek, u oʻgʻli tez-tez kasal boʻlib turishini va bolaga qarashda muntazam yordam beradigan yaqin kishisi yoʻqligini maʼlum qiladi.","U yana qaysi nafaqalar yoki xizmatlarga murojaat qilish huquqiga ega ekanini har doim ham yaxshi tushunmasligini aytadi.","Shu bilan birga, Mavluda xonani ozoda saqlaydi, oʻgʻliga mehr bilan muomala qiladi va uning maktabda oʻqishni davom ettirishini hamda «yaxshiroq kelajakka ega boʻlishini» istashini taʼkidlaydi.","Suhbat davomida oʻgʻli onasiga yaqin yuradi. Avvaliga u jim turadi, keyinchalik esa maktabni yaxshi koʻrishini va unga tez-tez borishni xohlashini aytadi.","Mavluda yordamni qabul qilishga tayyorligini bildiradi, ammo mahalladagi odamlar uni «yomon ona» deb oʻylashlarini istamasligini ham qoʻshimcha qiladi."],"ru":["Мавлуде 29 лет. Вместе с 7-летним сыном она живёт в одной съёмной комнате на окраине махалли. Недавно, после развода с мужем, она переехала в другой район. Сейчас у неё нет постоянной работы: время от времени она шьёт на дому и получает небольшой доход. В течение последнего месяца её сын несколько раз пропускал школу. Один из соседей сказал социальному работнику, что Мавлуда «плохо справляется с жизненными трудностями» и «всё время просит о помощи».","Во время первого визита Мавлуда рассказывает, что устала, беспокоится об оплате аренды и боится лишиться комнаты, в которой живёт.","Она также сообщает, что сын часто болеет и что у неё нет близкого человека, который регулярно помогал бы ей присматривать за ребёнком.","Кроме того, она говорит, что не всегда хорошо понимает, на какие пособия или услуги имеет право претендовать.","При этом Мавлуда содержит комнату в чистоте, ласково обращается с сыном и подчёркивает, что хочет, чтобы он продолжал учиться в школе и «имел лучшее будущее».","Во время беседы сын держится рядом с матерью. Сначала он молчит, а потом говорит, что любит школу и хочет ходить туда чаще.","Мавлуда выражает готовность принять помощь, но добавляет, что не хочет, чтобы люди в махалле считали её «плохой матерью»."]}},{"id":"k2-ilhom-saida","n":2,"title":{"lat":"Ilhom va Saida oilasi","cyr":"Илҳом ва Саида оиласи","ru":"Семья Ильхома и Саиды"},"text":{"cyr":["Илҳом (38 ёш) ва Саида (34 ёш) турмуш қурганларига 15 йил бўлган. Уларнинг 4 нафар фарзанди бор: қизлари 14 ёшда, ўғиллари 9 ёшда, қизлари 6 ёшда ва кичик ўғли 4 ёшда.","Оила узоқ йиллар давомида бошқа вилоятда яшаган. Илҳом турли мавсумий ишлар билан шуғулланиб келган бўлса-да, даромади доимий эмас эди. Оила иқтисодий аҳволини яхшилаш мақсадида яшаб турган жойини сотиб, бошқа шаҳарнинг чекка қишлоғига кўчиб ўтишга қарор қилади. Улар бутун умр жамғарган маблағлари ҳисобига арзонроқ уй сотиб оладилар. Кўчиб ўтганларидан кейин кутилганидек иш топилмайди. Илҳом бир неча марта иш излаб кўради, аммо доимий бандликка эга бўла олмайди. Оиланинг захира маблағлари қисқа вақт ичида тугайди. Янги жойда оила рўйхатдан ўтмаганлиги сабабли давлат томонидан бериладиган айрим ижтимоий ёрдамлардан фойдалана олмайди. Болаларни мактаб ва боғчага жойлаштиришда ҳам муаммолар юзага келади. Ота-она рўйхатдан ўтиш учун талаб қилинадиган харажатларни ҳам, мактаб учун зарур кийим-кечак ва ўқув қуролларини ҳам сотиб олиш имкониятига эга эмас эдилар. Шу сабабли 14 ва 9 ёшли болалар бир неча ой давомида мактабга бормай қўядилар. 6 ёшли қиз мактабга тайёрлов гуруҳига қатнамайди, 4 ёшли бола эса боғчага жойлаштирилмайди.","Вақт ўтиши билан оиланинг иқтисодий аҳволи янада оғирлашади. Кундалик озиқ-овқат харид қилиш ҳам муаммога айланади. Ота-она болаларни қишлоқ атрофидан пластик идишлар, темир-терсак ва чиқиндилар йиғишга юбора бошлайдилар. Болалар йиғган чиқиндилар сотилиб, оз миқдорда бўлса ҳам оила даромадига ҳисса қўшар эди. 14 ёшли қиз уй ишлари ва кичик укаларини парвариш қилиш билан кўп вақт ўтказар, 9 ёшли ўғил эса деярли ҳар куни чиқинди йиғишга чиқарди. Болаларнинг бўш вақти, таълим олиши ва дам олиши учун имконият деярли қолмаган эди. Иқтисодий босим кучайган сари Илҳом тушкунликка тушиб боради. У ўзини оиласини таъминлай олмаётганидан айбдор ҳис қила бошлайди ва вақт ўтиши билан спиртли ичимлик истеъмол қилишни одат қилади. Маст ҳолатлари кўпайиб, оилада жанжаллар ҳам тез-тез кузатила бошлайди.","Саида эса қўшниларнинг уйларида мавсумий ишлар қилишга ҳаракат қилар, баъзан кир ювиш ёки тозалаш ишларидан озгина ҳақ оларди. Аммо бу маблағлар оиланинг эҳтиёжларини қоплаш учун етарли эмас эди. Қўшнилар болаларнинг мунтазам равишда чиқинди йиғиб юрганини, мактабга бормаётганини ва оиланинг оғир аҳволини кўриб, бу ҳақда маҳалла ва «Инсон» ижтимоий хизматлар марказига хабар берадилар."],"lat":["Ilhom (38 yosh) va Saida (34 yosh) turmush qurganlariga 15 yil boʻlgan. Ularning 4 nafar farzandi bor: qizlari 14 yoshda, oʻgʻillari 9 yoshda, qizlari 6 yoshda va kichik oʻgʻli 4 yoshda.","Oila uzoq yillar davomida boshqa viloyatda yashagan. Ilhom turli mavsumiy ishlar bilan shugʻullanib kelgan boʻlsa-da, daromadi doimiy emas edi. Oila iqtisodiy ahvolini yaxshilash maqsadida yashab turgan joyini sotib, boshqa shaharning chekka qishlogʻiga koʻchib oʻtishga qaror qiladi. Ular butun umr jamgʻargan mablagʻlari hisobiga arzonroq uy sotib oladilar. Koʻchib oʻtganlaridan keyin kutilganidek ish topilmaydi. Ilhom bir necha marta ish izlab koʻradi, ammo doimiy bandlikka ega boʻla olmaydi. Oilaning zaxira mablagʻlari qisqa vaqt ichida tugaydi. Yangi joyda oila roʻyxatdan oʻtmaganligi sababli davlat tomonidan beriladigan ayrim ijtimoiy yordamlardan foydalana olmaydi. Bolalarni maktab va bogʻchaga joylashtirishda ham muammolar yuzaga keladi. Ota-ona roʻyxatdan oʻtish uchun talab qilinadigan xarajatlarni ham, maktab uchun zarur kiyim-kechak va oʻquv qurollarini ham sotib olish imkoniyatiga ega emas edilar. Shu sababli 14 va 9 yoshli bolalar bir necha oy davomida maktabga bormay qoʻyadilar. 6 yoshli qiz maktabga tayyorlov guruhiga qatnamaydi, 4 yoshli bola esa bogʻchaga joylashtirilmaydi.","Vaqt oʻtishi bilan oilaning iqtisodiy ahvoli yanada ogʻirlashadi. Kundalik oziq-ovqat xarid qilish ham muammoga aylanadi. Ota-ona bolalarni qishloq atrofidan plastik idishlar, temir-tersak va chiqindilar yigʻishga yubora boshlaydilar. Bolalar yigʻgan chiqindilar sotilib, oz miqdorda boʻlsa ham oila daromadiga hissa qoʻshar edi. 14 yoshli qiz uy ishlari va kichik ukalarini parvarish qilish bilan koʻp vaqt oʻtkazar, 9 yoshli oʻgʻil esa deyarli har kuni chiqindi yigʻishga chiqardi. Bolalarning boʻsh vaqti, taʼlim olishi va dam olishi uchun imkoniyat deyarli qolmagan edi. Iqtisodiy bosim kuchaygan sari Ilhom tushkunlikka tushib boradi. U oʻzini oilasini taʼminlay olmayotganidan aybdor his qila boshlaydi va vaqt oʻtishi bilan spirtli ichimlik isteʼmol qilishni odat qiladi. Mast holatlari koʻpayib, oilada janjallar ham tez-tez kuzatila boshlaydi.","Saida esa qoʻshnilarning uylarida mavsumiy ishlar qilishga harakat qilar, baʼzan kir yuvish yoki tozalash ishlaridan ozgina haq olardi. Ammo bu mablagʻlar oilaning ehtiyojlarini qoplash uchun yetarli emas edi. Qoʻshnilar bolalarning muntazam ravishda chiqindi yigʻib yurganini, maktabga bormayotganini va oilaning ogʻir ahvolini koʻrib, bu haqda mahalla va «Inson» ijtimoiy xizmatlar markaziga xabar beradilar."],"ru":["Ильхом (38 лет) и Саида (34 года) состоят в браке 15 лет. У них четверо детей: дочери 14 лет, сыну 9 лет, дочери 6 лет и младшему сыну 4 года.","Много лет семья жила в другой области. Ильхом занимался разными сезонными работами, но постоянного дохода у него не было. Чтобы улучшить материальное положение, семья решает продать жильё и переехать в отдалённое село на окраине другого города. На все сбережения, накопленные за жизнь, они покупают более дешёвый дом. После переезда работу, вопреки ожиданиям, найти не удаётся. Ильхом несколько раз пытается устроиться, но постоянной занятости так и не получает. Сбережения семьи быстро заканчиваются. Поскольку на новом месте семья не прошла регистрацию, она не может пользоваться некоторыми видами государственной социальной помощи. Возникают проблемы и с устройством детей в школу и детский сад. Родители не могут оплатить ни расходы, необходимые для регистрации, ни школьную одежду и учебные принадлежности. Поэтому дети 14 и 9 лет несколько месяцев не ходят в школу. 6-летняя дочь не посещает подготовительную к школе группу, а 4-летний ребёнок не устроен в детский сад.","Со временем материальное положение семьи ещё больше ухудшается. Проблемой становится даже покупка повседневных продуктов. Родители начинают отправлять детей собирать в окрестностях села пластиковую тару, металлолом и мусор. Собранное детьми продавалось, и это хоть немного пополняло семейный доход. 14-летняя дочь много времени проводила за домашними делами и уходом за младшими, а 9-летний сын почти каждый день уходил собирать отходы. На свободное время, учёбу и отдых у детей почти не оставалось возможностей. По мере усиления финансового давления Ильхом всё больше впадает в уныние. Он начинает винить себя за то, что не может обеспечить семью, и со временем привыкает употреблять алкоголь. Он всё чаще бывает пьян, в семье участились ссоры.","Саида старается подрабатывать сезонными работами в домах соседей, иногда получая немного денег за стирку или уборку. Однако этих средств недостаточно, чтобы покрыть нужды семьи. Соседи, видя, что дети регулярно собирают мусор, не ходят в школу и что семья в тяжёлом положении, сообщают об этом в махаллю и в центр социальных услуг «Инсон»."]}},{"id":"k3-jasur","n":3,"title":{"lat":"Jasur","cyr":"Жасур","ru":"Жасур"},"text":{"cyr":["Нигора туман «Инсон» ижтимоий хизматлар марказида кейс-менежер сифатида ишлайди. У 10 ёшли Жасур билан сўнгги 8 ой давомида ишлаб келмоқда. Жасурнинг онаси оғир касалликдан кейин вафот этган. Онасининг вафотидан кўп ўтмай, отаси оғир жиноят содир этганлиги учун озодликдан маҳрум қилиниб, жазони ижро этиш муассасасига юборилган. Шу тариқа Жасур ота-она қарамоғисиз қолган.","Дастлаб болани қариндошлари қарамоғига бериш масаласи кўриб чиқилган. Бироқ ўша пайтда холаси бошқа шаҳарда яшагани, иқтисодий аҳволи яхши эмаслиги ва оиласида бир нечта фарзандлари борлиги сабабли Жасур вақтинчалик оилавий болалар уйига жойлаштирилган.","Жасур оилавий болалар уйига келган дастлабки ойларда жуда оғир эмоционал ҳолатни бошдан кечирган. У кўп йиғлар, онасини соғинар, кечалари ёмон тушлар кўриб уйғонар ва атрофдагилар билан мулоқот қилишдан қочар эди. Мактабда ҳам баъзан жанжаллашиб қолар, ўқитувчилар уни жиззаки ва асабий деб таърифлашарди.","Нигора бола билан мунтазам иш олиб борди. Суҳбатлар, кузатувлар ва баҳолаш жараёнлари давомида у Жасурнинг энг катта эҳтиёжи ўзини бирор оилага тегишли ҳис қилиш эканлигини аниқлади. Жасур ҳар сафар холаси ҳақида гап кетганда илиқ муносабат билдирар, таътил кунлари унинг уйига борганда ўзини анча хотиржам ҳис қилишини айтарди. Сўнгги ойларда холаси ҳам бир неча марта Жасурни ўз қарамоғига олиш истагини билдирган. Баҳолаш жараёнида маълум бўлишича, хола ва унинг турмуш ўртоғи болага нисбатан меҳрибон муносабатда, Жасур уларнинг фарзандлари билан ҳам яхши чиқишади. Хола Жасурни мактабга жойлаштириш ва парвариш қилишга тайёрлигини билдирган.","Шу билан бирга, Жасурда ҳали ҳам баъзи муаммолар сақланиб қолган эди. Масалан, у баъзан қаттиқ асабийлашиб кетар, тенгдошлари билан низога киришар, айрим ҳолларда катталар талабларига бўйсунмаслик ҳолатлари кузатиларди. Мутахассислар бу ҳолатларни унинг ҳаётидаги оғир йўқотишлар ва травматик воқеалар билан боғлашарди.","Жасурнинг кейинги тақдири муҳокама қилинаётган йиғилишда турли мутахассислар иштирок этди. Улар орасида вояга етмаганлар билан ишлаш бўйича мутахассис Элдор ҳам бор эди. Нигора Жасурни холаси қарамоғига васийликка бериш тарафдори бўлиб чиқди. У боланинг оила муҳитига эҳтиёжи юқори эканлигини, холаси билан эмоционал алоқаси яхши шаклланганлигини ва бу боланинг барқарор ривожланиши учун муҳимлигини таъкидлади. Бироқ Элдор бошқача фикр билдирди. Унинг фикрича, Жасурда ҳали ҳам хулқ-атвор билан боғлиқ муаммолар сақланиб қолган. Шу сабабли у болани яна бир неча йил реабилитация муассасаси ёки махсус турар-жой муассасасида қолдириш мақсадга мувофиқ деб ҳисоблади. Бу фикр Нигорани қаттиқ ҳайратга солди. Унинг назарида, бола аллақачон оиласизлик оқибатларини бошдан кечирган ва уни яна муассасада қолдириш боланинг манфаатларига зид эди.","Муҳокама давомида баҳс тобора кескинлашиб борди. Нигора боланинг ҳуқуқлари ва энг яхши манфаатларини ҳимоя қилишга ҳаракат қилди. Элдор эса хавфсизлик ва хулқ-атвор билан боғлиқ муаммоларни биринчи ўринга қўйди. Оқибатда икки мутахассис ўртасидаги баҳс эмоционал тус олди. Овозлар кўтарилди, йиғилиш муҳити таранглашди. Нигора жуда ҳаяжонланган ҳолатга келиб қолгани сабабли раҳбар томонидан бироз тинчланиши учун йиғилиш залидан чиқарилди. Йиғилиш эса Жасурнинг кейинги тақдири ҳақида якуний қарор қабул қилмасдан тугади."],"lat":["Nigora tuman «Inson» ijtimoiy xizmatlar markazida keys-menejer sifatida ishlaydi. U 10 yoshli Jasur bilan soʻnggi 8 oy davomida ishlab kelmoqda. Jasurning onasi ogʻir kasallikdan keyin vafot etgan. Onasining vafotidan koʻp oʻtmay, otasi ogʻir jinoyat sodir etganligi uchun ozodlikdan mahrum qilinib, jazoni ijro etish muassasasiga yuborilgan. Shu tariqa Jasur ota-ona qaramogʻisiz qolgan.","Dastlab bolani qarindoshlari qaramogʻiga berish masalasi koʻrib chiqilgan. Biroq oʻsha paytda xolasi boshqa shaharda yashagani, iqtisodiy ahvoli yaxshi emasligi va oilasida bir nechta farzandlari borligi sababli Jasur vaqtinchalik oilaviy bolalar uyiga joylashtirilgan.","Jasur oilaviy bolalar uyiga kelgan dastlabki oylarda juda ogʻir emotsional holatni boshdan kechirgan. U koʻp yigʻlar, onasini sogʻinar, kechalari yomon tushlar koʻrib uygʻonar va atrofdagilar bilan muloqot qilishdan qochar edi. Maktabda ham baʼzan janjallashib qolar, oʻqituvchilar uni jizzaki va asabiy deb taʼriflashardi.","Nigora bola bilan muntazam ish olib bordi. Suhbatlar, kuzatuvlar va baholash jarayonlari davomida u Jasurning eng katta ehtiyoji oʻzini biror oilaga tegishli his qilish ekanligini aniqladi. Jasur har safar xolasi haqida gap ketganda iliq munosabat bildirar, taʼtil kunlari uning uyiga borganda oʻzini ancha xotirjam his qilishini aytardi. Soʻnggi oylarda xolasi ham bir necha marta Jasurni oʻz qaramogʻiga olish istagini bildirgan. Baholash jarayonida maʼlum boʻlishicha, xola va uning turmush oʻrtogʻi bolaga nisbatan mehribon munosabatda, Jasur ularning farzandlari bilan ham yaxshi chiqishadi. Xola Jasurni maktabga joylashtirish va parvarish qilishga tayyorligini bildirgan.","Shu bilan birga, Jasurda hali ham baʼzi muammolar saqlanib qolgan edi. Masalan, u baʼzan qattiq asabiylashib ketar, tengdoshlari bilan nizoga kirishar, ayrim hollarda kattalar talablariga boʻysunmaslik holatlari kuzatilardi. Mutaxassislar bu holatlarni uning hayotidagi ogʻir yoʻqotishlar va travmatik voqealar bilan bogʻlashardi.","Jasurning keyingi taqdiri muhokama qilinayotgan yigʻilishda turli mutaxassislar ishtirok etdi. Ular orasida voyaga yetmaganlar bilan ishlash boʻyicha mutaxassis Eldor ham bor edi. Nigora Jasurni xolasi qaramogʻiga vasiylikka berish tarafdori boʻlib chiqdi. U bolaning oila muhitiga ehtiyoji yuqori ekanligini, xolasi bilan emotsional aloqasi yaxshi shakllanganligini va bu bolaning barqaror rivojlanishi uchun muhimligini taʼkidladi. Biroq Eldor boshqacha fikr bildirdi. Uning fikricha, Jasurda hali ham xulq-atvor bilan bogʻliq muammolar saqlanib qolgan. Shu sababli u bolani yana bir necha yil reabilitatsiya muassasasi yoki maxsus turar-joy muassasasida qoldirish maqsadga muvofiq deb hisobladi. Bu fikr Nigorani qattiq hayratga soldi. Uning nazarida, bola allaqachon oilasizlik oqibatlarini boshdan kechirgan va uni yana muassasada qoldirish bolaning manfaatlariga zid edi.","Muhokama davomida bahs tobora keskinlashib bordi. Nigora bolaning huquqlari va eng yaxshi manfaatlarini himoya qilishga harakat qildi. Eldor esa xavfsizlik va xulq-atvor bilan bogʻliq muammolarni birinchi oʻringa qoʻydi. Oqibatda ikki mutaxassis oʻrtasidagi bahs emotsional tus oldi. Ovozlar koʻtarildi, yigʻilish muhiti taranglashdi. Nigora juda hayajonlangan holatga kelib qolgani sababli rahbar tomonidan biroz tinchlanishi uchun yigʻilish zalidan chiqarildi. Yigʻilish esa Jasurning keyingi taqdiri haqida yakuniy qaror qabul qilmasdan tugadi."],"ru":["Нигора работает кейс-менеджером в районном центре социальных услуг «Инсон». Последние 8 месяцев она работает с 10-летним Жасуром. Мать Жасура умерла после тяжёлой болезни. Вскоре после её смерти отец за совершение тяжкого преступления был лишён свободы и направлен в учреждение исполнения наказаний. Так Жасур остался без попечения родителей.","Сначала рассматривался вопрос о передаче ребёнка под опеку родственников. Однако в то время его тётя (сестра матери) жила в другом городе, её материальное положение было непростым, а в её семье было несколько детей. Поэтому Жасура временно поместили в семейный детский дом.","В первые месяцы в семейном детском доме Жасур переживал очень тяжёлое эмоциональное состояние. Он много плакал, тосковал по матери, по ночам просыпался от кошмаров и избегал общения с окружающими. В школе он тоже иногда ввязывался в ссоры; учителя описывали его как вспыльчивого и нервного.","Нигора регулярно работала с ребёнком. В ходе бесед, наблюдений и оценки она выяснила, что главная потребность Жасура — чувствовать, что он принадлежит какой-то семье. Каждый раз, когда речь заходила о тёте, Жасур отзывался о ней тепло и говорил, что, когда на каникулах бывает у неё дома, чувствует себя гораздо спокойнее. В последние месяцы тётя тоже несколько раз выражала желание взять Жасура к себе. В ходе оценки выяснилось, что тётя и её муж относятся к мальчику доброжелательно, а Жасур хорошо ладит с их детьми. Тётя выразила готовность устроить Жасура в школу и заботиться о нём.","Вместе с тем у Жасура всё ещё сохранялись некоторые проблемы. Например, иногда он сильно раздражался, вступал в конфликты со сверстниками, в отдельных случаях не подчинялся требованиям взрослых. Специалисты связывали это с тяжёлыми потерями и травмирующими событиями в его жизни.","В совещании, на котором обсуждалась дальнейшая судьба Жасура, участвовали разные специалисты, среди них — специалист по работе с несовершеннолетними Элдор. Нигора выступила за передачу Жасура под опеку тёти. Она подчеркнула, что потребность мальчика в семейном окружении высока, что у него сложилась хорошая эмоциональная связь с тётей и что это важно для его устойчивого развития. Однако Элдор высказал другое мнение. По его словам, у Жасура всё ещё сохраняются проблемы с поведением, поэтому целесообразно оставить его ещё на несколько лет в реабилитационном или специализированном учреждении с проживанием. Это мнение сильно удивило Нигору. По её мнению, мальчик уже пережил последствия жизни без семьи, и снова оставлять его в учреждении — против его интересов.","В ходе обсуждения спор всё больше обострялся. Нигора старалась защитить права и наилучшие интересы ребёнка. Элдор же ставил на первое место вопросы безопасности и поведения. В итоге спор между двумя специалистами принял эмоциональный характер. Голоса повысились, атмосфера совещания накалилась. Поскольку Нигора была очень взволнована, руководитель попросил её выйти из зала, чтобы немного успокоиться. Совещание завершилось, так и не приняв окончательного решения о дальнейшей судьбе Жасура."]}}];
+  function t(key, vars) {
+    var dict = T[S.lang] || T.lat;
+    var s = dict[key];
+    if (s == null) s = T.lat[key];
+    if (s == null) s = key;
+    if (vars) Object.keys(vars).forEach(function (k) { s = String(s).split("{" + k + "}").join(vars[k]); });
+    return s;
+  }
+  function regionName(id) { return (T[S.lang].regions[id]) || "—"; }
+  var DIST_IDX = {};
+  Object.keys(DISTRICTS).forEach(function (r) { DISTRICTS[r].forEach(function (d) { DIST_IDX[d[0]] = { region: r, lat: d[1], cyr: d[2], ru: d[3] }; }); });
+  function districtName(id) { var d = DIST_IDX[id]; return d ? (d[S.lang] || d.lat) : ""; }
+  function districtOk(region, id) { var d = DIST_IDX[id]; return !!d && d.region === region; }
+  function fillDistricts(sel, region, placeholder, allLabel) {
+    if (!sel) return;
+    var cur = sel.value;
+    var list = DISTRICTS[region] || [];
+    var col = { lat: 1, cyr: 2, ru: 3 }[S.lang] || 1;
+    var loc = { lat: "uz", cyr: "uz-Cyrl", ru: "ru" }[S.lang];
+    var html = allLabel != null
+      ? '<option value="">' + esc(allLabel) + "</option>"
+      : '<option value="" disabled>' + esc(region ? placeholder : t("districtPh0")) + "</option>";
+    [[0, t("grpTuman")], [1, t("grpShahar")]].forEach(function (g) {
+      var items = list.filter(function (d) { return d[4] === g[0]; }).sort(function (a, b) { return a[col].localeCompare(b[col], loc); });
+      if (!items.length) return;
+      html += '<optgroup label="' + esc(g[1]) + '">' + items.map(function (d) { return '<option value="' + esc(d[0]) + '">' + esc(d[col]) + "</option>"; }).join("") + "</optgroup>";
+    });
+    sel.innerHTML = html;
+    sel.disabled = !region;
+    sel.value = list.some(function (d) { return d[0] === cur; }) ? cur : "";
+    if (allLabel == null && !sel.value) sel.selectedIndex = 0;
+  }
+  function roleName(id) { return (T[S.lang].roles[id]) || "—"; }
+  function roleShort(id) { var d = T[S.lang].rolesShort || {}; return d[id] || roleName(id); }
+  function fillSelect(sel, ids, names, placeholder, allLabel) {
+    var cur = sel.value;
+    var html = placeholder != null ? '<option value="" disabled>' + esc(placeholder) + "</option>" : '<option value="">' + esc(allLabel) + "</option>";
+    ids.forEach(function (id) { html += '<option value="' + esc(id) + '">' + esc(names[id]) + "</option>"; });
+    sel.innerHTML = html;
+    sel.value = cur || "";
+    if (placeholder != null && !cur) sel.selectedIndex = 0;
+  }
+  function setLang(l) { if (!T[l]) return; S.lang = l; store.set("ihma-lang", l); applyLang(); }
+  function effTheme() {
+    var a = document.documentElement.getAttribute("data-theme");
+    if (a === "dark" || a === "light") return a;
+    return darkMQ && darkMQ.matches ? "dark" : "light";
+  }
+  function updateThemeBtn() {
+    var dark = effTheme() === "dark";
+    $("#theme-moon").toggleAttribute("hidden", dark);
+    $("#theme-sun").toggleAttribute("hidden", !dark);
+    var label = dark ? t("themeLight") : t("themeDark");
+    $("#theme-btn").setAttribute("aria-label", label);
+    $("#theme-btn").setAttribute("title", label);
+  }
+  function toggleTheme() {
+    var next = effTheme() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    store.set("ihma-theme", next);
+    updateThemeBtn();
+  }
+  var darkMQ = null;
+  try { darkMQ = window.matchMedia("(prefers-color-scheme: dark)"); } catch (e) {}
+  (function initTheme() {
+    var saved = store.get("ihma-theme");
+    if (saved === "dark" || saved === "light") document.documentElement.setAttribute("data-theme", saved);
+    if (darkMQ) {
+      var h = function () { updateThemeBtn(); };
+      if (darkMQ.addEventListener) darkMQ.addEventListener("change", h); else if (darkMQ.addListener) darkMQ.addListener(h);
+    }
+  })();
+  var FS_STEPS = [0.875, 1, 1.125, 1.25, 1.375];
+  var fsIdx = FS_STEPS.indexOf(Number(store.get("ihma-fs")));
+  if (fsIdx < 0) fsIdx = 1;
+  function applyFs() {
+    document.documentElement.style.setProperty("--fs-scale", String(FS_STEPS[fsIdx]));
+    var pct = Math.round(FS_STEPS[fsIdx] * 100) + "%";
+    [["#fs-dec", "fsDec"], ["#fs-inc", "fsInc"]].forEach(function (p) {
+      var label = t(p[1]) + " · " + pct;
+      $(p[0]).setAttribute("aria-label", label);
+      $(p[0]).setAttribute("title", label);
+    });
+    $("#fs-dec").disabled = fsIdx === 0;
+    $("#fs-inc").disabled = fsIdx === FS_STEPS.length - 1;
+    store.set("ihma-fs", FS_STEPS[fsIdx]);
+  }
+  function validate() {
+    var fio = $("#fio").value.trim();
+    var okFio = fio.split(/\s+/).filter(Boolean).length >= 2;
+    var okReg = !!$("#region").value;
+    var okDist = districtOk($("#region").value, $("#district").value);
+    var okRole = !!$("#role").value;
+    [["#f-fio", okFio], ["#f-region", okReg], ["#f-district", !okReg || okDist], ["#f-role", okRole]].forEach(function (p) {
+      var f = $(p[0]);
+      f.classList.toggle("invalid", !p[1]);
+      $(".field-err", f).hidden = p[1];
+    });
+    if (!okFio) $("#fio").focus(); else if (!okReg) $("#region").focus(); else if (!okDist) $("#district").focus(); else if (!okRole) $("#role").focus();
+    return okFio && okReg && okDist && okRole;
+  }
+  function setPane(p) {
+    $("#grid-case").setAttribute("data-pane", p);
+    $("#pane-btn-case").setAttribute("aria-selected", String(p === "case"));
+    $("#pane-btn-answer").setAttribute("aria-selected", String(p === "answer"));
+  }
+  function renderWho() {
+    var a = S.attempt;
+    $("#case-who").textContent = a ? [a.fio, regionName(a.region), districtName(a.district), roleName(a.role)].filter(Boolean).join(" · ") : "";
+  }
+  function getCase(id) { for (var i = 0; i < CASES.length; i++) { if (CASES[i].id === id) return CASES[i]; } return null; }
+  function caseNo(id) { var c = getCase(id); return c ? "№" + c.n : "—"; }
+  function caseLabel(id) { var c = getCase(id); return c ? "№" + c.n + " · " + (c.title[S.lang] || c.title.lat) : "—"; }
+  function renderCaseText() {
+    var c = S.attempt ? getCase(S.attempt.caseId) : null;
+    if (!c) { $("#case-eyebrow").textContent = ""; $("#case-text").innerHTML = ""; $("#case-task").textContent = ""; return; }
+    $("#case-eyebrow").textContent = t("caseEyebrow", { n: c.n, title: c.title[S.lang] || c.title.lat });
+    $("#case-text").innerHTML = (c.text[S.lang] || c.text.cyr).map(function (p) { return "<p>" + esc(p) + "</p>"; }).join("");
+    $("#case-task").textContent = TASK[S.lang] || TASK.cyr;
+  }
+  function updateCounter() {
+    var v = $("#answer").value;
+    $("#counter").textContent = t("counter", { n: v.length, w: words(v) });
+    $("#pane-count").textContent = words(v) ? "· " + words(v) : "";
+    $("#submit-btn").disabled = !v.trim();
+  }
+  function scoreClass(total, max) { var p = max ? total / max : 0; return p >= .75 ? "ok" : (p >= .45 ? "warn" : "bad"); }
+  function cleanClass(c) { return c == null ? "info" : (c >= 80 ? "ok" : (c >= 50 ? "warn" : "bad")); }
+  function resultBlocks(att, split) {
+    var r = att.result;
+    if (!r) return split ? null : "";
+    var pct = Math.round((r.total / r.max) * 100);
+    var names = T[S.lang].crit;
+    var score =
+      '<div class="card raised stack-16">' +
+        '<div class="score-card">' +
+          '<span class="medal">' + ICON.medal + "</span>" +
+          '<div class="stack-8">' +
+            '<span class="eyebrow">' + esc(t("judgeTitle")) + "</span>" +
+            '<div class="score-line"><span class="score-big">' + fmtNum(r.total) + '</span><span class="score-max">/ ' + r.max + "</span>" +
+            '<span class="badge ' + scoreClass(r.total, r.max) + ' num">' + pct + "%</span></div>" +
+            '<div class="meter" aria-hidden="true"><span style="width:' + pct + '%"></span></div>' +
+          "</div>" +
+          (r.summary ? '<p class="score-summary">' + esc(r.summary) + "</p>" : "") +
+        "</div>" +
+      "</div>";
+    var crit =
+      '<div class="card raised stack-16">' +
+        '<h2 class="row">' + ICON.doc + "<span>" + esc(t("expertTitle")) + "</span></h2>" +
+        r.criteria.map(function (c) {
+          var aw = c.awarded.length ? c.awarded.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") : "<li>—</li>";
+          var de = c.deducted.length ? c.deducted.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") : "<li>—</li>";
+          return '<section class="crit">' +
+            '<div class="crit-head"><h3><span>[' + c.n + "]</span>" + esc(names[c.n - 1]) + '</h3><span class="badge ' + scoreClass(c.score, c.max) + ' num">' + fmtNum(c.score) + " / " + c.max + "</span></div>" +
+            '<div class="crit-cols">' +
+              '<div class="reasons plus"><span class="r-title">' + ICON.check + esc(t("awarded")) + "</span><ul>" + aw + "</ul></div>" +
+              '<div class="reasons minus"><span class="r-title">' + ICON.minus + esc(t("deducted")) + "</span><ul>" + de + "</ul></div>" +
+            "</div></section>";
+        }).join("") +
+      "</div>";
+    var ind = r.independence || {};
+    var cleanTxt = ind.clean == null ? t("indepNA") : ind.clean + "% " + t("cleanWord");
+    var indep =
+      '<div class="card raised"><div class="indep">' +
+        '<div class="row between"><h2 class="row">' + ICON.shield + "<span>" + esc(t("indepTitle")) + "</span></h2>" +
+        '<span class="badge ' + cleanClass(ind.clean) + ' num">' + esc(cleanTxt) + "</span></div>" +
+        (ind.verdict ? "<p><b>" + esc(ind.verdict) + "</b></p>" : "") +
+        (ind.notes && ind.notes.length ? '<ul class="reasons"><li>' + ind.notes.map(esc).join("</li><li>") + "</li></ul>" : "") +
+        '<p class="cap muted">' + esc(t("indepCaveat")) + "</p>" +
+      "</div></div>";
+    if (split) return { score: score, crit: crit, indep: indep };
+    return score + crit + indep;
+  }
+  function metaBlock(att) {
+    return '<dl class="meta">' +
+      "<div><dt>" + esc(t("metaFio")) + "</dt><dd>" + esc(att.fio) + "</dd></div>" +
+      "<div><dt>" + esc(t("metaRegion")) + "</dt><dd>" + esc(regionName(att.region)) + "</dd></div>" +
+      (att.district ? "<div><dt>" + esc(t("metaDistrict")) + "</dt><dd>" + esc(districtName(att.district)) + "</dd></div>" : "") +
+      "<div><dt>" + esc(t("metaRole")) + "</dt><dd>" + esc(roleName(att.role)) + "</dd></div>" +
+      "<div><dt>" + esc(t("txtCase")) + "</dt><dd>" + esc(caseLabel(att.caseId)) + "</dd></div>" +
+      "<div><dt>" + esc(t("metaDate")) + '</dt><dd class="num">' + esc(fmtDate(att.submittedAt || att.startedAt)) + "</dd></div>" +
+      "</dl>";
+  }
+  function resultText(att) {
+    var r = att.result;
+    if (!r) return "";
+    var names = T[S.lang].crit;
+    var lines = [
+      "IHMA · " + t("brandSub"),
+      t("metaFio") + ": " + att.fio,
+      t("metaRegion") + ": " + regionName(att.region),
+      t("metaDistrict") + ": " + (districtName(att.district) || "—"),
+      t("metaRole") + ": " + roleName(att.role),
+      t("txtCase") + ": " + caseLabel(att.caseId),
+      t("metaDate") + ": " + fmtDate(att.submittedAt || att.startedAt),
+      "",
+      "🏅 " + t("judgeTitle") + ": " + fmtNum(r.total) + " / " + r.max,
+      "📝 " + t("expertTitle") + ":"
+    ];
+    r.criteria.forEach(function (c) {
+      lines.push("[" + c.n + "] " + names[c.n - 1] + " (" + fmtNum(c.score) + " / " + c.max + "):");
+      lines.push("   - " + t("awarded") + ": " + (c.awarded.join("; ") || "—"));
+      lines.push("   - " + t("deducted") + ": " + (c.deducted.join("; ") || "—"));
+    });
+    var ind = r.independence || {};
+    lines.push("🕵️‍♂️ " + t("indepTitle") + ": " + (ind.clean == null ? t("indepNA") : ind.clean + "% " + t("cleanWord")) + (ind.verdict ? " (" + ind.verdict + ")" : ""));
+    (ind.notes || []).forEach(function (n) { lines.push("   - " + n); });
+    if (r.summary) { lines.push(""); lines.push(r.summary); }
+    return lines.join("\n");
+  }
+  function statusBadge(a) {
+    if (a.status === "done") return '<span class="badge ok">' + esc(t("stDone")) + "</span>";
+    if (a.status === "error") return '<span class="badge bad">' + esc(t("stError")) + "</span>";
+    return '<span class="badge info">' + esc(t("stPending")) + "</span>";
+  }
+  function sortAtts(list) {
+    return list.slice().sort(function (x, y) { return String(y.submittedAt || y.startedAt || "").localeCompare(String(x.submittedAt || x.startedAt || "")); });
+  }
+
+  /* ================= Telegram Mini App: holat va server bilan aloqa ================= */
+  var API_URL = "@@API_URL@@";
+  var BOT_LINK = "@@BOT_LINK@@";
+  var TG = (window.Telegram && window.Telegram.WebApp) || null;
+  var HAS_TG = !!(TG && TG.initData);
+  var CONFIGURED = /^https:\/\//.test(API_URL) || /^http:\/\/localhost[:/]/.test(API_URL);
+  if (BOT_LINK.indexOf("@@") === 0) BOT_LINK = "";
+
+  function guessLang() {
+    var u = TG && TG.initDataUnsafe && TG.initDataUnsafe.user;
+    var c = (u && u.language_code) || "";
+    return c.indexOf("ru") === 0 ? "ru" : "lat";
+  }
+  var S = {
+    lang: (store.get("ihma-lang") in T) ? store.get("ihma-lang") : guessLang(),
+    flow: "start", view: "test", ready: false, initError: null, attempt: null, tick: null,
+    submitting: false, starting: false, history: [], viewing: null, resultFrom: "flow",
+    poll: null, skew: 0, waitId: null, sentAt: null, sendError: null, autoSent: false
+  };
+
+  function api(action, payload) {
+    if (!CONFIGURED) return Promise.reject({ code: "config" });
+    var body = Object.assign({ action: action, initData: TG ? TG.initData : "" }, payload || {});
+    var ctrl = typeof AbortController === "function" ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 30000);
+    /* text/plain — brauzer qo'shimcha (preflight) so'rov yubormaydi, Apps Script shuni qabul qiladi */
+    return fetch(API_URL, { method: "POST", body: JSON.stringify(body), signal: ctrl ? ctrl.signal : undefined, redirect: "follow" })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        clearTimeout(timer);
+        if (j && j.serverNow) S.skew = j.serverNow - Date.now();
+        if (!j || !j.ok) throw { code: (j && j.error) || "server" };
+        return j;
+      }, function () { clearTimeout(timer); throw { code: "network" }; });
+  }
+  function now() { return Date.now() + S.skew; }
+  function mapStatus(s) { return s === "baholandi" ? "done" : (s === "xato" ? "error" : (s === "boshlandi" ? "started" : "pending")); }
+  function fromServer(x) {
+    return {
+      id: x.id, caseId: x.caseId, fio: x.fio, region: x.region, district: x.district, role: x.role, lang: x.lang,
+      startedAt: x.startedAt, submittedAt: x.submittedAt, status: mapStatus(x.status), timing: x.timing,
+      result: x.result || null
+    };
+  }
+  function fromShort(x) {
+    return { id: x.id, caseId: x.caseId, status: mapStatus(x.status), total: x.total, max: x.max, startedAt: x.startedAt, submittedAt: x.submittedAt };
+  }
+
+  /* ---------- qoralama: Telegram bulut xotirasi (+ shu qurilma xotirasi) ---------- */
+  var cloud = {
+    ok: !!(TG && TG.CloudStorage && (!TG.isVersionAtLeast || TG.isVersionAtLeast("6.9"))),
+    get: function (keys) {
+      return new Promise(function (res) {
+        if (!cloud.ok) return res({});
+        try { TG.CloudStorage.getItems(keys, function (err, vals) { res(err ? {} : (vals || {})); }); } catch (e) { res({}); }
+      });
+    },
+    set: function (k, v) {
+      if (!cloud.ok) return;
+      try { TG.CloudStorage.setItem(k, v, function () {}); } catch (e) {}
+    },
+    del: function (keys) {
+      if (!cloud.ok) return;
+      try { TG.CloudStorage.removeItems(keys, function () {}); } catch (e) {}
+    }
+  };
+  var CHUNK = 3800, NCHUNK = 3;
+  function draftKeys(id) {
+    var base = "d_" + String(id).replace(/[^A-Za-z0-9_-]/g, "");
+    var k = [];
+    for (var i = 0; i < NCHUNK; i++) k.push(base + "_" + i);
+    return k;
+  }
+  function saveDraft() {
+    var a = S.attempt;
+    if (!a) return;
+    var txt = String(a.answer || "");
+    store.set("ihma-tgdraft", { id: a.id, answer: txt });
+    draftKeys(a.id).forEach(function (k, i) { cloud.set(k, txt.slice(i * CHUNK, (i + 1) * CHUNK)); });
+  }
+  function loadDraft(id) {
+    var local = store.get("ihma-tgdraft");
+    var localTxt = local && local.id === id ? String(local.answer || "") : "";
+    var keys = draftKeys(id);
+    return cloud.get(keys).then(function (vals) {
+      var c = keys.map(function (k) { return vals[k] || ""; }).join("");
+      return c.length >= localTxt.length ? c : localTxt;
+    });
+  }
+  function clearDraft(id) {
+    store.del("ihma-tgdraft");
+    cloud.del(draftKeys(id));
+  }
+
+  /* ---------- til ---------- */
+  function applyLang() {
+    document.documentElement.lang = { lat: "uz-Latn", cyr: "uz-Cyrl", ru: "ru" }[S.lang];
+    $$("[data-i18n]").forEach(function (el) { el.textContent = t(el.getAttribute("data-i18n")); });
+    $$("[data-i18n-ph]").forEach(function (el) { el.setAttribute("placeholder", t(el.getAttribute("data-i18n-ph"))); });
+    $$("[data-i18n-aria]").forEach(function (el) { el.setAttribute("aria-label", t(el.getAttribute("data-i18n-aria"))); });
+    $$("[data-i18n-title]").forEach(function (el) { el.setAttribute("title", t(el.getAttribute("data-i18n-title"))); });
+    $$(".langs button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-lang") === S.lang)); });
+    updateThemeBtn();
+    applyFs();
+    fillSelect($("#region"), REGION_IDS, T[S.lang].regions, t("regionPh"));
+    fillDistricts($("#district"), $("#region").value, t("districtPh"));
+    fillSelect($("#role"), ROLE_IDS, T[S.lang].roles, t("rolePh"));
+    renderCaseText();
+    $("#case-crit").innerHTML = T[S.lang].crit.map(function (c, i) { return "<li><b>" + (i + 1) + "</b>" + esc(c) + "</li>"; }).join("");
+    renderNotices();
+    updateCounter();
+    renderWho();
+    if (S.flow === "eval") renderEvalCard();
+    if (S.flow === "result" && S.viewing) renderResult(S.viewing);
+    renderHistory();
+  }
+
+  /* ---------- ko'rinishlar ---------- */
+  var FLOW_VIEWS = ["start", "case", "eval", "result"];
+  function show(view) {
+    if (FLOW_VIEWS.indexOf(view) >= 0) { S.flow = view; S.view = "test"; } else { S.view = view; }
+    var active = S.view === "test" ? S.flow : S.view;
+    ["start", "case", "eval", "result", "history"].forEach(function (v) { $("#v-" + v).hidden = v !== active; });
+    $("#tab-test").setAttribute("aria-current", S.view === "test" ? "page" : "false");
+    $("#tab-history").setAttribute("aria-current", S.view === "history" ? "page" : "false");
+    var locked = S.flow === "case";
+    document.body.classList.toggle("in-test", locked && S.view === "test");
+    $("#tab-history").disabled = locked;
+    try { window.scrollTo(0, 0); } catch (e) {}
+  }
+
+  /* ---------- holat xabarlari (kirish oynasida) ---------- */
+  function renderNotices(extra) {
+    var box = $("#notices");
+    if (!box) return;
+    var n;
+    if (extra) n = extra;
+    else if (!HAS_TG) n = ["warn", ICON.alert, t("tgOnly"), BOT_LINK ? '<a class="btn btn-secondary small" href="' + esc(BOT_LINK) + '" target="_blank" rel="noopener">' + esc(t("openBot")) + "</a>" : ""];
+    else if (!CONFIGURED) n = ["warn", ICON.alert, t("noConfig")];
+    else if (S.initError) n = ["bad", ICON.alert, S.initError === "auth" ? t("authErr") : t("netErr"), '<button type="button" class="btn btn-secondary small" data-retry="init">' + esc(t("tryAgain")) + "</button>"];
+    else if (!S.ready) n = ["info", ICON.info, t("loading")];
+    else n = ["ok", ICON.check, t("ready")];
+    box.innerHTML = '<div class="notice ' + n[0] + ' cap">' + n[1] + '<span class="stack-8" style="gap:8px"><span>' + esc(n[2]) + "</span>" + (n[3] || "") + "</span></div>";
+    $("#start-btn").disabled = !(HAS_TG && CONFIGURED && S.ready) || S.starting;
+  }
+
+  /* ---------- 1. kirish ---------- */
+  function prefill(p) {
+    if (!p) return;
+    if (!$("#fio").value) $("#fio").value = p.fio || "";
+    if (REGION_IDS.indexOf(p.region) >= 0) {
+      $("#region").value = p.region;
+      fillDistricts($("#district"), p.region, t("districtPh"));
+      if (districtOk(p.region, p.district)) $("#district").value = p.district;
+    }
+    if (ROLE_IDS.indexOf(p.role) >= 0) $("#role").value = p.role;
+  }
+  function startTest(ev) {
+    ev.preventDefault();
+    if (S.starting || !validate()) return;
+    S.starting = true;
+    renderNotices();
+    var p = { fio: $("#fio").value.trim().replace(/\s+/g, " "), region: $("#region").value, district: $("#district").value, role: $("#role").value, lang: S.lang };
+    api("start", p).then(function (j) {
+      S.attempt = Object.assign({ answer: "" }, p, { id: j.attempt.id, caseId: j.attempt.caseId, deadline: j.attempt.deadline, startedAt: j.attempt.startedAt });
+      store.set("ihma-tgprofile", { fio: p.fio, region: p.region, district: p.district, role: p.role });
+      if (!j.resumed) return null;
+      return loadDraft(S.attempt.id).then(function (d) { S.attempt.answer = d; });
+    }).then(function () {
+      S.starting = false;
+      renderNotices();
+      openCase();
+    }, function (e) {
+      S.starting = false;
+      var code = e && e.code;
+      renderNotices(["bad", ICON.alert, code === "auth" ? t("authErr") : (code === "network" ? t("netErr") : t("startErr"))]);
+    });
+  }
+  function openCase() {
+    $("#answer").value = S.attempt.answer || "";
+    $("#confirm").hidden = true;
+    S.submitting = false;
+    setPane("case");
+    renderWho();
+    renderCaseText();
+    updateCounter();
+    show("case");
+    startTimer();
+    if (TG && TG.enableClosingConfirmation) { try { TG.enableClosingConfirmation(); } catch (e) {} }
+  }
+
+  /* ---------- 2. keys: taymer va javob ---------- */
+  function startTimer() {
+    clearInterval(S.tick);
+    var run = function () {
+      if (!S.attempt) return;
+      var left = Math.max(0, S.attempt.deadline - now());
+      var m = Math.floor(left / 60000), s = Math.floor((left % 60000) / 1000);
+      $("#timer-val").textContent = pad(m) + ":" + pad(s);
+      $("#timer").classList.toggle("low", left <= 5 * 60000);
+      if (left <= 0 && !S.submitting && S.flow === "case") submitAnswer(true);
+    };
+    run();
+    S.tick = setInterval(run, 1000);
+  }
+  var draftT = null;
+  function onAnswer() {
+    if (!S.attempt) return;
+    S.attempt.answer = $("#answer").value;
+    updateCounter();
+    clearTimeout(draftT);
+    draftT = setTimeout(saveDraft, 1200);
+  }
+  function submitAnswer(auto) {
+    if (S.submitting || !S.attempt) return;
+    S.submitting = true;
+    clearInterval(S.tick);
+    var att = S.attempt;
+    att.answer = $("#answer").value;
+    saveDraft();
+    S.autoSent = !!auto;
+    S.sendError = null;
+    S.waitId = null;
+    show("eval");
+    renderEvalCard();
+    api("submit", { attemptId: att.id, answer: att.answer, auto: !!auto }).then(function () {
+      clearDraft(att.id);
+      S.submitting = false;
+      S.waitId = att.id;
+      S.sentAt = Date.now();
+      if (TG) {
+        try { TG.disableClosingConfirmation(); } catch (e) {}
+        askWriteAccess();
+      }
+      renderEvalCard();
+      startPoll();
+      refreshHistory();
+    }, function (e) {
+      S.submitting = false;
+      S.sendError = (e && e.code) || "network";
+      renderEvalCard();
+    });
+  }
+  /* bot xodimga xabar yoza olishi uchun ruxsat (bot chatida Start bosilmagan bo'lsa) */
+  function askWriteAccess() {
+    try {
+      var u = TG.initDataUnsafe && TG.initDataUnsafe.user;
+      if (u && u.allows_write_to_pm) return;
+      if (TG.requestWriteAccess && (!TG.isVersionAtLeast || TG.isVersionAtLeast("6.9"))) TG.requestWriteAccess(function () {});
+    } catch (e) {}
+  }
+
+  /* ---------- 3. yuborish va kutish ---------- */
+  function renderEvalCard() {
+    var card = $("#eval-card");
+    if (S.submitting) {
+      card.innerHTML = '<div class="spinner" aria-hidden="true"></div><h1>' + esc(t("sending")) + "</h1>";
+      return;
+    }
+    if (S.sendError) {
+      var left = S.attempt ? S.attempt.deadline - now() : 0;
+      card.innerHTML =
+        '<div class="notice bad">' + ICON.alert + "<span>" + esc(S.sendError === "auth" ? t("authErr") : t("sendErr")) + "</span></div>" +
+        '<div class="actions"><button type="button" class="btn btn-primary" data-wait="resend">' + ICON.refresh + "<span>" + esc(t("resend")) + "</span></button>" +
+        (left > 0 ? '<button type="button" class="btn btn-secondary" data-wait="edit">' + esc(t("paneAnswer")) + "</button>" : "") + "</div>";
+      return;
+    }
+    if (S.evalFailed) {
+      card.innerHTML = '<div class="notice warn">' + ICON.alert + "<span>" + esc(t("evalFail")) + "</span></div>" +
+        '<div class="actions"><button type="button" class="btn btn-secondary" data-wait="history">' + esc(t("btnHistory")) + "</button></div>";
+      return;
+    }
+    var mins = S.sentAt ? Math.floor((Date.now() - S.sentAt) / 60000) : 0;
+    card.innerHTML =
+      '<div class="notice ok">' + ICON.check + "<span><b>" + esc(t("sentTitle")) + "</b></span></div>" +
+      (S.autoSent ? '<p class="cap muted">' + esc(t("timeUp")) + "</p>" : "") +
+      "<p>" + esc(t("sentText")) + "</p>" +
+      '<div class="row" style="gap:10px"><span class="spinner small" aria-hidden="true"></span><span class="cap muted num" id="wait-status">' + esc(t("sentWait", { m: mins })) + "</span></div>" +
+      '<div class="actions"><button type="button" class="btn btn-secondary" data-wait="history">' + esc(t("btnHistory")) + "</button></div>";
+  }
+  function onEvalAction(e) {
+    var b = e.target.closest("[data-wait]");
+    if (!b) return;
+    var act = b.getAttribute("data-wait");
+    if (act === "resend") submitAnswer(S.autoSent);
+    else if (act === "edit") { S.sendError = null; openCase(); setPane("answer"); }
+    else if (act === "history") { show("history"); refreshHistory(); }
+  }
+  function stopPoll() { clearInterval(S.poll); S.poll = null; }
+  function checkResult() {
+    if (!S.waitId) return;
+    var el = $("#wait-status");
+    if (el && S.sentAt) el.textContent = t("sentWait", { m: Math.floor((Date.now() - S.sentAt) / 60000) });
+    if (document.hidden) return;
+    var id = S.waitId;
+    api("result", { attemptId: id }).then(function (j) {
+      if (S.waitId !== id) return;
+      var a = fromServer(j.attempt);
+      if (a.status === "done" && a.result) {
+        stopPoll();
+        S.waitId = null;
+        S.viewing = a;
+        S.resultFrom = "flow";
+        renderResult(a);
+        if (S.view === "test") show("result"); else S.flow = "result";
+        refreshHistory();
+      } else if (a.status === "error") {
+        stopPoll();
+        S.waitId = null;
+        S.evalFailed = true;
+        renderEvalCard();
+        refreshHistory();
+      }
+    }, function () {});
+  }
+  function startPoll() {
+    stopPoll();
+    S.evalFailed = false;
+    S.poll = setInterval(checkResult, 45000);
+    setTimeout(checkResult, 8000);
+  }
+
+  /* ---------- 4. hakam bahosi ---------- */
+  function renderResult(att) {
+    var parts = resultBlocks(att, true);
+    var head = '<div class="res-head"><div class="card raised stack-16">' +
+      '<div class="stack-8"><span class="eyebrow">' + esc(t("resEyebrow")) + "</span><h1>" + esc(t("judgeTitle")) + "</h1></div>" +
+      metaBlock(att) + "</div></div>";
+    var actions = '<div class="res-act"><div class="card stack-8"><div class="actions">' +
+      '<button type="button" class="btn btn-secondary" data-act="copy">' + ICON.copy + "<span>" + esc(t("btnCopy")) + "</span></button>" +
+      (S.resultFrom === "history"
+        ? '<button type="button" class="btn btn-primary" data-act="back">' + esc(t("back")) + "</button>"
+        : '<button type="button" class="btn btn-primary" data-act="new">' + esc(t("btnNew")) + "</button>" +
+          '<button type="button" class="btn btn-secondary" data-act="history">' + esc(t("btnHistory")) + "</button>") +
+      '</div><p class="cap muted" id="act-msg" aria-live="polite"></p></div></div>';
+    $("#result-body").classList.toggle("split", !!parts);
+    $("#result-body").innerHTML = parts
+      ? '<div class="res-side">' + head + '<div class="res-indep">' + parts.indep + "</div>" + actions + "</div>" +
+        '<div class="res-main"><div class="res-score">' + parts.score + '</div><div class="res-crit">' + parts.crit + "</div></div>"
+      : head + actions;
+  }
+  function onResultAction(e) {
+    var btn = e.target.closest("[data-act]");
+    if (!btn) return;
+    var act = btn.getAttribute("data-act");
+    var msg = $("#act-msg");
+    if (act === "copy" && S.viewing) {
+      var txt = resultText(S.viewing);
+      var done = function (ok) { if (msg) msg.textContent = ok ? t("copied") : t("copyFail"); };
+      try { navigator.clipboard.writeText(txt).then(function () { done(true); }, function () { done(false); }); } catch (err) { done(false); }
+    } else if (act === "new") {
+      S.attempt = null; S.viewing = null;
+      show("start");
+    } else if (act === "history" || act === "back") {
+      show("history");
+      refreshHistory();
+    }
+  }
+
+  /* ---------- 5. mening natijalarim ---------- */
+  function renderHistory(note) {
+    var box = $("#hist-list");
+    if (!box) return;
+    if (!HAS_TG) { box.innerHTML = '<p class="empty">' + esc(t("histNoAcc")) + "</p>"; return; }
+    if (!S.ready) { box.innerHTML = '<p class="empty">' + esc(S.initError ? t("netErr") : t("loading")) + "</p>"; return; }
+    var atts = sortAtts(S.history);
+    var head = note ? '<div class="notice info cap">' + ICON.info + "<span>" + esc(note) + "</span></div>" : "";
+    if (!atts.length) { box.innerHTML = head + '<p class="empty">' + esc(t("histEmpty")) + "</p>"; return; }
+    box.innerHTML = head + atts.map(function (a) {
+      var score = a.status === "done" && a.total != null
+        ? '<span class="badge ' + scoreClass(a.total, a.max) + ' num">' + fmtNum(a.total) + " / " + a.max + "</span>"
+        : statusBadge(a);
+      return '<div class="hist-item"><div class="stack-8" style="gap:2px"><b class="num">' + esc(fmtDate(a.submittedAt || a.startedAt)) + "</b>" +
+        '<span class="cap muted">' + esc(caseLabel(a.caseId)) + "</span></div>" +
+        '<div class="row">' + score + (a.status === "done" ? '<button type="button" class="btn btn-secondary small" data-open="' + esc(a.id) + '">' + esc(t("view")) + "</button>" : "") + "</div></div>";
+    }).join("");
+  }
+  function openResult(id, from) {
+    return api("result", { attemptId: id }).then(function (j) {
+      var a = fromServer(j.attempt);
+      if (a.status === "done" && a.result) {
+        S.viewing = a;
+        S.resultFrom = from;
+        renderResult(a);
+        show("result");
+      } else {
+        show("history");
+        renderHistory(a.status === "error" ? t("evalFail") : t("notReady"));
+      }
+    }, function (e) {
+      show("history");
+      renderHistory(e && e.code === "notfound" ? t("notFound") : t("netErr"));
+    });
+  }
+  function onHistoryClick(e) {
+    var b = e.target.closest("[data-open]");
+    if (!b) return;
+    b.disabled = true;
+    openResult(b.getAttribute("data-open"), "history").then(function () { b.disabled = false; });
+  }
+  function refreshHistory() {
+    if (!HAS_TG || !CONFIGURED) return;
+    api("init").then(function (j) { S.history = (j.history || []).map(fromShort); renderHistory(); }, function () {});
+  }
+
+  /* ---------- ishga tushirish ---------- */
+  function resume(act, prof) {
+    S.attempt = {
+      id: act.id, caseId: act.caseId, deadline: act.deadline, startedAt: act.startedAt, lang: S.lang, answer: "",
+      fio: (prof && prof.fio) || "", region: prof && prof.region, district: prof && prof.district, role: prof && prof.role
+    };
+    return loadDraft(act.id).then(function (d) {
+      S.attempt.answer = d || "";
+      openCase();
+      /* vaqt tugagan bo'lsa, saqlangan qoralama avtomatik yuboriladi */
+      if (act.deadline - now() <= 0) submitAnswer(true);
+    });
+  }
+  function boot() {
+    S.initError = null;
+    S.ready = false;
+    renderNotices();
+    renderHistory();
+    if (!HAS_TG || !CONFIGURED) return;
+    api("init").then(function (j) {
+      S.ready = true;
+      S.history = (j.history || []).map(fromShort);
+      var prof = j.profile || store.get("ihma-tgprofile");
+      prefill(prof);
+      renderNotices();
+      renderHistory();
+      var q = "";
+      try { q = new URLSearchParams(location.search).get("a") || ""; } catch (e) {}
+      if (!q && TG.initDataUnsafe && TG.initDataUnsafe.start_param) q = TG.initDataUnsafe.start_param;
+      if (j.active) return resume(j.active, prof);
+      if (q) return openResult(q, "history");
+    }, function (e) {
+      S.initError = (e && e.code) || "network";
+      renderNotices();
+      renderHistory();
+    });
+  }
+
+  if (TG) {
+    try { TG.ready(); TG.expand(); } catch (e) {}
+    if (!store.get("ihma-theme") && (TG.colorScheme === "dark" || TG.colorScheme === "light")) document.documentElement.setAttribute("data-theme", TG.colorScheme);
+  }
+
+  $$(".langs button").forEach(function (b) { b.addEventListener("click", function () { setLang(b.getAttribute("data-lang")); }); });
+  $("#theme-btn").addEventListener("click", toggleTheme);
+  $("#fs-dec").addEventListener("click", function () { if (fsIdx > 0) { fsIdx -= 1; applyFs(); } });
+  $("#fs-inc").addEventListener("click", function () { if (fsIdx < FS_STEPS.length - 1) { fsIdx += 1; applyFs(); } });
+  $("#tab-test").addEventListener("click", function () { show(S.flow); });
+  $("#tab-history").addEventListener("click", function () { show("history"); refreshHistory(); });
+  $("#start-form").addEventListener("submit", startTest);
+  $("#region").addEventListener("change", function () { fillDistricts($("#district"), this.value, t("districtPh")); });
+  ["#fio", "#region", "#district", "#role"].forEach(function (s) {
+    $(s).addEventListener("input", function () { var f = $(s).closest(".field"); if (f.classList.contains("invalid")) { f.classList.remove("invalid"); $(".field-err", f).hidden = true; } });
+  });
+  $("#answer").addEventListener("input", onAnswer);
+  $("#submit-btn").addEventListener("click", function () { $("#confirm").hidden = false; $("#confirm-yes").focus(); });
+  $("#confirm-no").addEventListener("click", function () { $("#confirm").hidden = true; $("#answer").focus(); });
+  $("#confirm-yes").addEventListener("click", function () { submitAnswer(false); });
+  $("#result-body").addEventListener("click", onResultAction);
+  $("#hist-list").addEventListener("click", onHistoryClick);
+  $("#eval-card").addEventListener("click", onEvalAction);
+  $("#notices").addEventListener("click", function (e) { if (e.target.closest("[data-retry]")) boot(); });
+  $$(".pane-switch button").forEach(function (b) { b.addEventListener("click", function () { setPane(b.getAttribute("data-pane")); }); });
+  $("#to-answer").addEventListener("click", function () { setPane("answer"); try { window.scrollTo(0, 0); } catch (e) {} });
+  document.addEventListener("visibilitychange", function () { if (!document.hidden && S.waitId) checkResult(); });
+  (function () {
+    var tb = $(".topbar");
+    var setH = function () { document.documentElement.style.setProperty("--tb-h", Math.round(tb.getBoundingClientRect().height) + "px"); };
+    setH();
+    try { new ResizeObserver(setH).observe(tb); } catch (e) { window.addEventListener("resize", setH); }
+  })();
+
+  applyFs();
+  applyLang();
+  show("start");
+  boot();
+})();
+</script>
+</body>
+</html>
