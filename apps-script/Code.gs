@@ -123,8 +123,19 @@ function rowObj_(vals) {
   COLS.forEach(function (c, i) { o[c[0]] = vals[i]; });
   return o;
 }
+/* Xodim yozgan matn "=", "+", "-", "@" bilan boshlansa, Sheets uni formula deb o'qiydi
+   (masalan =IMPORTXML(...) jadval ma'lumotini tashqariga chiqarishi mumkin).
+   Oldiga ' qo'yilsa, katakda oddiy matn sifatida saqlanadi (' ko'rinmaydi). */
+function cellSafe_(v) { return typeof v === "string" && /^[=+\-@]/.test(v) ? "'" + v : v; }
 function rowArr_(o) {
-  return COLS.map(function (c) { return o[c[0]] == null ? "" : o[c[0]]; });
+  return COLS.map(function (c) { return o[c[0]] == null ? "" : cellSafe_(o[c[0]]); });
+}
+/* 1-ustun matn, qolganlari formula. setFormulas doim inglizcha sintaksis (vergul) bilan ishlaydi;
+   setValues esa formulani jadval tiliga qarab o'qiydi va rus tilida (nuqta-vergul) #ERROR! beradi. */
+function putFormulaRows_(sh, r, rows) {
+  sh.getRange(r, 1, rows.length, 1).setValues(rows.map(function (x) { return [x[0]]; }));
+  sh.getRange(r, 2, rows.length, rows[0].length - 1).setFormulas(rows.map(function (x) { return x.slice(1); }));
+  return sh.getRange(r, 1, rows.length, rows[0].length);
 }
 function readRow_(sh, r) { return rowObj_(sh.getRange(r, 1, 1, NCOL).getValues()[0]); }
 function writeRow_(sh, r, o) { sh.getRange(r, 1, 1, NCOL).setValues([rowArr_(o)]); }
@@ -209,7 +220,7 @@ function apiStart_(user, req) {
       regionId: region, districtId: district, roleId: role, caseId: caseId,
       deadline: now.getTime() + CFG.minutes * 60000
     };
-    sh.appendRow(rowArr_(o));
+    writeRow_(sh, sh.getLastRow() + 1, o); // appendRow emas: cellSafe_ (') aniq setValues orqali ishlaydi
     return { ok: true, attempt: { id: o.id, caseId: caseId, deadline: o.deadline, startedAt: now.toISOString() } };
   });
 }
@@ -348,9 +359,9 @@ function setup() {
       "=COUNTIFS(" + A + L("regionName") + ":" + L("regionName") + "," + nm + "," + A + L("status") + ":" + L("status") + ",\"" + ST.pending + "\")"];
   });
   rp.getRange(1, 1, 1, 5).setValues(head).setFontWeight("bold");
-  rp.getRange(2, 1, regionRows.length, 5).setValues(regionRows);
+  putFormulaRows_(rp, 2, regionRows);
   var tr = regionRows.length + 2;
-  rp.getRange(tr, 1, 1, 5).setValues([["Jami", "=SUM(B2:B" + (tr - 1) + ")", "=SUM(C2:C" + (tr - 1) + ")",
+  putFormulaRows_(rp, tr, [["Jami", "=SUM(B2:B" + (tr - 1) + ")", "=SUM(C2:C" + (tr - 1) + ")",
     "=IFERROR(ROUND(AVERAGEIF(" + A + L("status") + ":" + L("status") + ",\"" + ST.done + "\"," + A + L("total") + ":" + L("total") + "),1),\"\")",
     "=SUM(E2:E" + (tr - 1) + ")"]]).setFontWeight("bold");
   var r0 = tr + 2;
@@ -362,7 +373,7 @@ function setup() {
       "=COUNTIFS(" + A + L("roleName") + ":" + L("roleName") + "," + nm + "," + A + L("status") + ":" + L("status") + ",\"" + ST.done + "\")",
       "=IFERROR(ROUND(AVERAGEIFS(" + A + L("total") + ":" + L("total") + "," + A + L("roleName") + ":" + L("roleName") + "," + nm + "," + A + L("status") + ":" + L("status") + ",\"" + ST.done + "\"),1),\"\")"];
   });
-  rp.getRange(r0 + 1, 1, roleRows.length, 4).setValues(roleRows);
+  putFormulaRows_(rp, r0 + 1, roleRows);
   rp.setColumnWidth(1, 300);
 
   /* Mini App manzili (o'zgartirish: Script Properties) */
