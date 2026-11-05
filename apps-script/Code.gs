@@ -130,11 +130,22 @@ function cellSafe_(v) { return typeof v === "string" && /^[=+\-@]/.test(v) ? "'"
 function rowArr_(o) {
   return COLS.map(function (c) { return o[c[0]] == null ? "" : cellSafe_(o[c[0]]); });
 }
-/* 1-ustun matn, qolganlari formula. setFormulas doim inglizcha sintaksis (vergul) bilan ishlaydi;
-   setValues esa formulani jadval tiliga qarab o'qiydi va rus tilida (nuqta-vergul) #ERROR! beradi. */
-function putFormulaRows_(sh, r, rows) {
+/* Formuladagi argument ajratgichi jadval tiliga (locale) bog'liq: en_US — ",", uz_UZ / ru_RU — ";".
+   uz_UZ da setFormula("=SUM(1,2)") 3 emas, 1,2 (o'nli son) beradi. Shuning uchun bir marta sinab aniqlaymiz. */
+function formulaSep_(sh) {
+  var c = sh.getRange(1, 26);
+  c.setFormula("=SUM(1,2)");
+  SpreadsheetApp.flush();
+  var sep = c.getValue() === 3 ? "," : ";";
+  c.clearContent();
+  return sep;
+}
+/* 1-ustun matn, qolganlari formula (kod ichida "," bilan yozilgan, jadval tiliga moslab almashtiriladi). */
+function putFormulaRows_(sh, r, rows, sep) {
   sh.getRange(r, 1, rows.length, 1).setValues(rows.map(function (x) { return [x[0]]; }));
-  sh.getRange(r, 2, rows.length, rows[0].length - 1).setFormulas(rows.map(function (x) { return x.slice(1); }));
+  sh.getRange(r, 2, rows.length, rows[0].length - 1).setFormulas(rows.map(function (x) {
+    return x.slice(1).map(function (f) { return sep === "," ? f : f.replace(/,/g, sep); });
+  }));
   return sh.getRange(r, 1, rows.length, rows[0].length);
 }
 function readRow_(sh, r) { return rowObj_(sh.getRange(r, 1, 1, NCOL).getValues()[0]); }
@@ -347,6 +358,7 @@ function setup() {
   /* Hisobot */
   var rp = ss.getSheetByName(SHEETS.rep) || ss.insertSheet(SHEETS.rep);
   rp.clear();
+  var sep = formulaSep_(rp);
   var L = function (k) { return colLetter_(C[k]); };
   var A = "'" + SHEETS.att + "'!";
   var head = [["Hudud", "Urinishlar", "Baholangan", "O'rtacha ball", "Navbatda"]];
@@ -359,11 +371,11 @@ function setup() {
       "=COUNTIFS(" + A + L("regionName") + ":" + L("regionName") + "," + nm + "," + A + L("status") + ":" + L("status") + ",\"" + ST.pending + "\")"];
   });
   rp.getRange(1, 1, 1, 5).setValues(head).setFontWeight("bold");
-  putFormulaRows_(rp, 2, regionRows);
+  putFormulaRows_(rp, 2, regionRows, sep);
   var tr = regionRows.length + 2;
   putFormulaRows_(rp, tr, [["Jami", "=SUM(B2:B" + (tr - 1) + ")", "=SUM(C2:C" + (tr - 1) + ")",
     "=IFERROR(ROUND(AVERAGEIF(" + A + L("status") + ":" + L("status") + ",\"" + ST.done + "\"," + A + L("total") + ":" + L("total") + "),1),\"\")",
-    "=SUM(E2:E" + (tr - 1) + ")"]]).setFontWeight("bold");
+    "=SUM(E2:E" + (tr - 1) + ")"]], sep).setFontWeight("bold");
   var r0 = tr + 2;
   rp.getRange(r0, 1, 1, 4).setValues([["Lavozim", "Urinishlar", "Baholangan", "O'rtacha ball"]]).setFontWeight("bold");
   var roleRows = Object.keys(ROLES).map(function (id, i) {
@@ -373,7 +385,7 @@ function setup() {
       "=COUNTIFS(" + A + L("roleName") + ":" + L("roleName") + "," + nm + "," + A + L("status") + ":" + L("status") + ",\"" + ST.done + "\")",
       "=IFERROR(ROUND(AVERAGEIFS(" + A + L("total") + ":" + L("total") + "," + A + L("roleName") + ":" + L("roleName") + "," + nm + "," + A + L("status") + ":" + L("status") + ",\"" + ST.done + "\"),1),\"\")"];
   });
-  putFormulaRows_(rp, r0 + 1, roleRows);
+  putFormulaRows_(rp, r0 + 1, roleRows, sep);
   rp.setColumnWidth(1, 300);
 
   /* Mini App manzili (o'zgartirish: Script Properties) */
