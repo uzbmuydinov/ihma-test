@@ -12,8 +12,12 @@ Xodim (Telegram) → Mini App (shu repo, GitHub Pages) → Apps Script (apps-scr
 | Fayl | Nima |
 |---|---|
 | `index.html` | Telegram ichida ochiladigan sahifa (3 til, hudud/tuman, 40 daqiqalik taymer, natija) |
-| `apps-script/Code.gs` | Backend: javobni qabul qiladi, Telegram imzosini tekshiradi, botdan xabar yuboradi |
+| `apps-script/Code.gs` | Backend: javobni qabul qiladi, Telegram imzosini tekshiradi, botdan natija yuboradi |
+| `apps-script/Report.gs` | Natija PDF hisoboti: ball shkalasi, mezonlar radari, shkalalar, kuchli tomonlar va o'sish nuqtalari, ekspert izohi (3 tilda) |
+| `apps-script/ReportData.gs` | Hisobot uchun shrift (Montserrat, [OFL](apps-script/OFL-Montserrat.txt)) va hudud/lavozim nomlari 3 tilda. Avtomatik yaratilgan |
 | `Kalitlar.gs` | **Repoda yo'q, maxfiy.** Ideal javoblar. Admin alohida oladi |
+
+Natija botga **PDF fayl** bo'lib keladi: izohida ball, qisqa xulosa, kuchli tomon va o'sish nuqtasi, ostida **«Batafsil ko'rish»** tugmasi (natija sahifasi). PDF yasab bo'lmasa, bot oddiy matnli xabar yuboradi.
 
 ## O'rnatish (bir marta)
 
@@ -30,6 +34,7 @@ claude.ai → Settings → Privacy → **"Help improve Claude"** ni o'chiring (x
 2. **Kengaytmalar → Apps Script**.
 3. `Code.gs` dagi bor kodni o'chirib, shu repodagi `apps-script/Code.gs` ni to'liq qo'ying.
 4. Chapda **+ → Script** → nomi `Kalitlar` → admin bergan `Kalitlar.gs` matnini qo'ying. **Saqlash** (💾).
+   Xuddi shunday `Report` va `ReportData` fayllarini qo'shib, repodagi `apps-script/Report.gs` va `apps-script/ReportData.gs` ni qo'ying.
 5. ⚙️ **Project Settings → Script Properties → Add script property**:
    - `BOT_TOKEN` = BotFather tokeni
 6. Muharrirda funksiya ro'yxatidan **`setup`** ni tanlab **Run**. Birinchi marta ruxsat so'raydi:
