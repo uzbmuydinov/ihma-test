@@ -26,7 +26,9 @@ var COLS = [
   ["answer", "Javob"], ["evaluatedAt", "Baholangan"], ["summary", "Xulosa"], ["resultJson", "Natija (JSON)"],
   ["notifiedAt", "Xabar yuborilgan"], ["tgId", "Telegram ID"], ["tgUser", "Telegram username"], ["tgName", "Telegram ismi"],
   ["lang", "Til"], ["regionId", "regionId"], ["districtId", "districtId"], ["roleId", "roleId"], ["caseId", "caseId"],
-  ["deadline", "deadline"], ["claim", "claim"], ["note", "Izoh"]
+  ["deadline", "deadline"], ["claim", "claim"], ["note", "Izoh"],
+  /* mezonlar boʻyicha ball (0–4), baholovchi yozadi — xarita va oʻquv guruhlari uchun */
+  ["c1", "M1 Xatarlar"], ["c2", "M2 Himoya omillari"], ["c3", "M3 Kompleks xulosa"], ["c4", "M4 Xizmat rejasi"], ["c5", "M5 Advokatsiya"]
 ];
 var C = {};
 COLS.forEach(function (c, i) { C[c[0]] = i + 1; });
@@ -375,13 +377,15 @@ function setup() {
 
   /* Urinishlar */
   var sh = ss.getSheetByName(SHEETS.att) || ss.insertSheet(SHEETS.att);
+  if (sh.getMaxColumns() < NCOL) sh.insertColumnsAfter(sh.getMaxColumns(), NCOL - sh.getMaxColumns());
   sh.getRange(1, 1, 1, NCOL).setValues([COLS.map(function (c) { return c[1]; })]).setFontWeight("bold");
   sh.setFrozenRows(1);
   ["id", "tgId", "districtId", "deadline", "claim"].forEach(function (k) { sh.getRange(1, C[k], sh.getMaxRows(), 1).setNumberFormat("@"); });
   ["startedAt", "submittedAt", "evaluatedAt", "notifiedAt"].forEach(function (k) { sh.getRange(2, C[k], sh.getMaxRows() - 1, 1).setNumberFormat("dd.mm.yyyy hh:mm"); });
   sh.setColumnWidth(C.answer, 360);
   sh.setColumnWidth(C.summary, 280);
-  sh.hideColumns(TECH_FROM, NCOL - TECH_FROM);
+  sh.hideColumns(TECH_FROM, C.note - TECH_FROM + 1);   // texnik ustunlar yashiriladi, mezon ballari koʻrinib turadi
+  sh.showColumns(C.c1, NCOL - C.c1 + 1);
 
   /* Kalitlar (to'ldirish — Kalitlar.gs dagi setupKeys()) */
   var ks = ss.getSheetByName(SHEETS.keys) || ss.insertSheet(SHEETS.keys);
