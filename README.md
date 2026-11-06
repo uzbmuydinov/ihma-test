@@ -11,13 +11,13 @@ Xodim (Telegram) → Mini App (shu repo, GitHub Pages) → Apps Script (apps-scr
 
 | Fayl | Nima |
 |---|---|
-| `index.html` | Telegram ichida ochiladigan sahifa (3 til, hudud/tuman, 40 daqiqalik taymer, natija) |
+| `index.html` | Telegram ichida ochiladigan sahifa (3 til, hudud/tuman, 40 daqiqalik taymer, natija). Javob maydoniga tashqaridan matn qoʻyish (paste) oʻchirilgan |
 | `apps-script/Code.gs` | Backend: javobni qabul qiladi, Telegram imzosini tekshiradi, botdan natija yuboradi |
-| `apps-script/Report.gs` | Natija PDF hisoboti: ball shkalasi, mezonlar radari, shkalalar, kuchli tomonlar va o'sish nuqtalari, ekspert izohi (3 tilda) |
+| `apps-script/Report.gs` | Natija PDF hisoboti: ball shkalasi, mezonlar radari, shkalalar, kuchli tomonlar va eʼtibor qaratish kerak boʻlgan nuqtalar, ekspert izohi (3 tilda) |
 | `apps-script/ReportData.gs` | Hisobot uchun shrift (Montserrat, [OFL](apps-script/OFL-Montserrat.txt)) va hudud/lavozim nomlari 3 tilda. Avtomatik yaratilgan |
 | `Kalitlar.gs` | **Repoda yo'q, maxfiy.** Ideal javoblar. Admin alohida oladi |
 
-Natija botga **PDF fayl** bo'lib keladi: izohida ball, qisqa xulosa, kuchli tomon va o'sish nuqtasi, ostida **«Batafsil ko'rish»** tugmasi (natija sahifasi). PDF yasab bo'lmasa, bot oddiy matnli xabar yuboradi.
+Natija botga **PDF fayl** bo'lib keladi: izohida ball, qisqa xulosa, kuchli tomon va eʼtibor qaratish kerak boʻlgan nuqta, ostida **«Batafsil ko'rish»** tugmasi (natija sahifasi). PDF yasab bo'lmasa, bot oddiy matnli xabar yuboradi.
 
 ## O'rnatish (bir marta)
 
@@ -71,7 +71,9 @@ Manzil o'zgarmaydi.
 Holat: `boshlandi` → `navbatda` → `baholanmoqda` → `baholandi` (yoki `xato`).
 Baholovchi yozadigan ustunlar: H (Holat), I (Ball), J (Maks.), K (Mustaqillik %), P (Baholangan), Q (Xulosa), R (Natija JSON), AC (claim).
 "Xabar yuborilgan" (S) to'lmaguncha bot har daqiqada tekshiradi.
+AE–AI — mezonlar bo'yicha ball (M1–M5). AJ — "Nusxa qoʻyish urinishlari": xodim javob maydoniga tashqaridan matn qo'yishga necha marta urinib ko'rgani (hammasi bloklangan; ballga ta'sir qilmaydi, faqat admin uchun belgi).
 
 ## Xavfsizlik
 - Har bir so'rovda Telegram `initData` imzosi bot tokeni bilan tekshiriladi: soxta so'rov rad etiladi, xodim faqat o'z natijasini ko'radi.
 - Bot tokeni faqat Script Properties'da. Ideal javoblar faqat "Kalitlar" varag'ida (repoda yo'q).
+- Javob maydoni: paste, drag-and-drop va klaviatura buferidan bir martada 40 belgidan uzun matn qo'yish bloklanadi (xodim o'z javobidan ko'chirgan bo'lakni qayta qo'ya oladi). Keys matnini belgilab/nusxalab bo'lmaydi. Bu to'liq himoya emas: matnni qo'lda qayta yozishni to'xtatib bo'lmaydi.

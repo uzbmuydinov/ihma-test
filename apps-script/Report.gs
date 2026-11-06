@@ -1,7 +1,7 @@
 /**
  * IHMA — natija hisoboti (PDF).
  * Bot xodimga yuboradigan PDF shu yerda chiziladi: umumiy ball shkalasi, mezonlar radari,
- * mezonlar shkalalari, kuchli va oʻsish nuqtalari, mustaqillik, ekspert izohi.
+ * mezonlar shkalalari, kuchli tomonlar va eʼtibor qaratish kerak boʻlgan nuqtalar, mustaqillik, ekspert izohi.
  *
  * Tashqi xizmat yoki Google Docs ishlatilmaydi: PDF faylni shu kod oʻzi yozadi
  * (vektor shakllar + Montserrat shrifti, ReportData.gs). Shuning uchun tez va kvotasiz.
@@ -20,33 +20,33 @@ var RC = {
 /* Hisobot matnlari (3 tilda) */
 var RT = {
   lat: {
-    org: "Ijtimoiy himoya tizimi xodimlarining malakasini oshirish markazi", title: "MALAKA BAHOLASH NATIJASI",
+    org: "Ijtimoiy himoya tizimi xodimlarining malakasini oshirish markazi", title: "KEYS BAHOLASH NATIJASI",
     kCase: "KEYS", kSubmitted: "TOPSHIRILGAN", kDuration: "DAVOMIYLIGI", kTiming: "TOPSHIRISH", minutes: "daqiqa",
-    total: "UMUMIY BALL", profile: "MEZONLAR PROFILI", byCrit: "Mezonlar boʻyicha natija", strong: "KUCHLI TOMONLAR", weak: "OʻSISH NUQTALARI",
+    total: "UMUMIY BALL", profile: "MEZONLAR PROFILI", byCrit: "Mezonlar boʻyicha natija", strong: "KUCHLI TOMONLAR", weak: "EʼTIBOR QARATISH KERAK BOʻLGAN NUQTALAR",
     indep: "MUSTAQILLIK (TAXMIN)", expert: "EKSPERT IZOHI", expertTitle: "Ekspert izohi", summary: "UMUMIY XULOSA", awarded: "Ball berilgan asoslar", deducted: "Ball chegirilgan sabablar",
     none: "Qayd etilmagan", high: "Yuqori daraja", mid: "Oʻrta daraja", low: "Past daraja", cont: "davomi",
     caveat: "Mustaqillik — AI taxmini, yakuniy xulosa emas.",
-    footer: "IHMA · Malaka baholash tizimi. Baho AI hakam (Claude) tomonidan ideal javob asosida qoʻyilgan; yakuniy qarorni attestatsiya komissiyasi qabul qiladi.",
+    footer: "IHMA · Malaka baholash tizimi. Baho AI hakam (Claude) tomonidan ideal javob asosida qoʻyilgan.",
     timing: { "Vaqtida": "Vaqtida", "Avto": "Vaqt tugaganda avtomatik", "Kech": "Kechikib" }, file: "IHMA_natija"
   },
   cyr: {
-    org: "Ижтимоий ҳимоя тизими ходимларининг малакасини ошириш маркази", title: "МАЛАКА БАҲОЛАШ НАТИЖАСИ",
+    org: "Ижтимоий ҳимоя тизими ходимларининг малакасини ошириш маркази", title: "КЕЙС БАҲОЛАШ НАТИЖАСИ",
     kCase: "КЕЙС", kSubmitted: "ТОПШИРИЛГАН", kDuration: "ДАВОМИЙЛИГИ", kTiming: "ТОПШИРИШ", minutes: "дақиқа",
-    total: "УМУМИЙ БАЛЛ", profile: "МЕЗОНЛАР ПРОФИЛИ", byCrit: "Мезонлар бўйича натижа", strong: "КУЧЛИ ТОМОНЛАР", weak: "ЎСИШ НУҚТАЛАРИ",
+    total: "УМУМИЙ БАЛЛ", profile: "МЕЗОНЛАР ПРОФИЛИ", byCrit: "Мезонлар бўйича натижа", strong: "КУЧЛИ ТОМОНЛАР", weak: "ЭЪТИБОР ҚАРАТИШ КЕРАК БЎЛГАН НУҚТАЛАР",
     indep: "МУСТАҚИЛЛИК (ТАХМИН)", expert: "ЭКСПЕРТ ИЗОҲИ", expertTitle: "Эксперт изоҳи", summary: "УМУМИЙ ХУЛОСА", awarded: "Балл берилган асослар", deducted: "Балл чегирилган сабаблар",
     none: "Қайд этилмаган", high: "Юқори даража", mid: "Ўрта даража", low: "Паст даража", cont: "давоми",
     caveat: "Мустақиллик — AI тахмини, якуний хулоса эмас.",
-    footer: "IHMA · Малака баҳолаш тизими. Баҳо AI ҳакам (Claude) томонидан идеал жавоб асосида қўйилган; якуний қарорни аттестация комиссияси қабул қилади.",
+    footer: "IHMA · Малака баҳолаш тизими. Баҳо AI ҳакам (Claude) томонидан идеал жавоб асосида қўйилган.",
     timing: { "Vaqtida": "Вақтида", "Avto": "Вақт тугаганда автоматик", "Kech": "Кечикиб" }, file: "IHMA_natija"
   },
   ru: {
-    org: "Центр повышения квалификации работников системы социальной защиты", title: "РЕЗУЛЬТАТ ОЦЕНКИ КВАЛИФИКАЦИИ",
+    org: "Центр повышения квалификации работников системы социальной защиты", title: "РЕЗУЛЬТАТ ОЦЕНКИ КЕЙСА",
     kCase: "КЕЙС", kSubmitted: "СДАНО", kDuration: "ДЛИТЕЛЬНОСТЬ", kTiming: "СДАЧА", minutes: "мин",
-    total: "ОБЩИЙ БАЛЛ", profile: "ПРОФИЛЬ ПО КРИТЕРИЯМ", byCrit: "Результат по критериям", strong: "СИЛЬНЫЕ СТОРОНЫ", weak: "ТОЧКИ РОСТА",
+    total: "ОБЩИЙ БАЛЛ", profile: "ПРОФИЛЬ ПО КРИТЕРИЯМ", byCrit: "Результат по критериям", strong: "СИЛЬНЫЕ СТОРОНЫ", weak: "НА ЧТО ОБРАТИТЬ ВНИМАНИЕ",
     indep: "САМОСТОЯТЕЛЬНОСТЬ (ОЦЕНКА)", expert: "КОММЕНТАРИЙ ЭКСПЕРТА", expertTitle: "Комментарий эксперта", summary: "ОБЩИЙ ВЫВОД", awarded: "За что начислены баллы", deducted: "За что сняты баллы",
     none: "Не отмечено", high: "Высокий уровень", mid: "Средний уровень", low: "Низкий уровень", cont: "продолжение",
     caveat: "Самостоятельность — оценка ИИ, не окончательный вывод.",
-    footer: "IHMA · Система оценки квалификации. Оценка выставлена ИИ-экспертом (Claude) на основе эталонного ответа; окончательное решение принимает аттестационная комиссия.",
+    footer: "IHMA · Система оценки квалификации. Оценка выставлена ИИ-экспертом (Claude) на основе эталонного ответа.",
     timing: { "Vaqtida": "Вовремя", "Avto": "Автоматически по истечении времени", "Kech": "С опозданием" }, file: "IHMA_natija"
   }
 };
@@ -357,7 +357,7 @@ function reportPdf_(o, res) {
   });
   y += 4;
 
-  /* kuchli tomonlar va oʻsish nuqtalari */
+  /* kuchli tomonlar va eʼtibor qaratish kerak boʻlgan nuqtalar */
   var sw2 = repStrongWeak_(crit), cw2 = (CW - 16) / 2;
   var mk = function (items, key) {
     var parts = [];
@@ -376,7 +376,8 @@ function reportPdf_(o, res) {
       if (!blk.h) return;
       pdfRRect_(d, bx, y, cw2, bh, 12, q[3], q[4], 0.8);
       pdfCircle_(d, bx + 19, y + 19, 3, q[6]);
-      pdfText_(d, "s", 8, q[5], bx + 28, y + 22, q[2]);
+      var hw = cw2 - 42, hs = Math.min(8, 8 * hw / Math.max(1, pdfWidth_("s", q[2], 8)));   // uzun sarlavha sigʻsin
+      pdfText_(d, "s", hs, q[5], bx + 28, y + 22, q[2]);
       var yy = y + 40;
       blk.parts.forEach(function (p) {
         if (p.k === "h") { yy = pdfLines_(d, "s", 9, RC.text, bx + 16, yy, p.lines, 12) + 4; }
