@@ -359,7 +359,8 @@ function reportPdf_(o, res) {
   y += 4;
 
   /* kuchli tomonlar va eʼtibor qaratish kerak boʻlgan nuqtalar */
-  var sw2 = repStrongWeak_(crit), cw2 = (CW - 16) / 2;
+  /* bir tomon boʻsh boʻlsa (masalan, hamma mezon 0 ball — kuchli tomon yoʻq), ikkinchi karta toʻliq kenglikda chiziladi: boʻsh joy qolmaydi */
+  var sw2 = repStrongWeak_(crit), both = sw2.strong.length > 0 && sw2.weak.length > 0, cw2 = both ? (CW - 16) / 2 : CW;
   var mk = function (items, key) {
     var parts = [];
     items.forEach(function (c) {
@@ -372,7 +373,7 @@ function reportPdf_(o, res) {
   var A = mk(sw2.strong, "a"), B = mk(sw2.weak, "d"), bh = Math.max(A.h, B.h), moved = false;
   if (bh) {
     if (y + bh > BOTTOM) { repContPage_(d, fio, t, M, true); y = 84; moved = true; }
-    [[A, M, t.strong, RC.okSoft, RC.okLine, RC.okText, RC.ok, "+"], [B, M + cw2 + 16, t.weak, RC.warnSoft, RC.warnLine, RC.warnText, RC.warn, "−"]].forEach(function (q) {
+    [[A, M, t.strong, RC.okSoft, RC.okLine, RC.okText, RC.ok, "+"], [B, both ? M + cw2 + 16 : M, t.weak, RC.warnSoft, RC.warnLine, RC.warnText, RC.warn, "−"]].forEach(function (q) {
       var blk = q[0], bx = q[1];
       if (!blk.h) return;
       pdfRRect_(d, bx, y, cw2, bh, 12, q[3], q[4], 0.8);

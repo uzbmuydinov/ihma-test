@@ -11,7 +11,7 @@ Xodim (Telegram) → Mini App (shu repo, GitHub Pages) → Apps Script (apps-scr
 
 | Fayl | Nima |
 |---|---|
-| `index.html` | Telegram ichida ochiladigan sahifa (3 til, hudud/tuman, 40 daqiqalik taymer, natija). Javob maydoniga tashqaridan matn qoʻyish (paste) oʻchirilgan |
+| `index.html` | Telegram ichida ochiladigan sahifa (3 til, hudud/tuman, 40 daqiqalik taymer, natija). Kompyuterda (Telegram Desktop) butun ekranga ochiladi. Javob maydoniga tashqaridan matn qoʻyish (paste) oʻchirilgan |
 | `apps-script/Code.gs` | Backend: javobni qabul qiladi, Telegram imzosini tekshiradi, botdan natija yuboradi |
 | `apps-script/Report.gs` | Natija PDF hisoboti: ball shkalasi, mezonlar radari, shkalalar, kuchli tomonlar va eʼtibor qaratish kerak boʻlgan nuqtalar, ekspert izohi (3 tilda) |
 | `apps-script/ReportData.gs` | Hisobot uchun shrift (Montserrat, [OFL](apps-script/OFL-Montserrat.txt)) va hudud/lavozim nomlari 3 tilda. Avtomatik yaratilgan |
@@ -69,6 +69,7 @@ Manzil o'zgarmaydi.
 
 ## Jadval ustunlari (Urinishlar)
 Holat: `boshlandi` → `navbatda` → `baholanmoqda` → `baholandi` (yoki `xato`).
+F.I.Sh. (C) har doim oʻzbek lotin alifbosida saqlanadi: xodim kirillda yozsa ham server lotinga oʻgiradi (oʻ, gʻ, ʼ belgilari bir xil koʻrinishda).
 Baholovchi yozadigan ustunlar: H (Holat), I (Ball), J (Maks.), K (Mustaqillik %), P (Baholangan), Q (Xulosa), R (Natija JSON), AC (claim).
 "Xabar yuborilgan" (S) to'lmaguncha bot har daqiqada tekshiradi.
 AE–AI — mezonlar bo'yicha ball (M1–M5). AJ — "Nusxa qoʻyish urinishlari": xodim javob maydoniga tashqaridan matn qo'yishga necha marta urinib ko'rgani (hammasi bloklangan; ballga ta'sir qilmaydi, faqat admin uchun belgi).

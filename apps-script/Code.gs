@@ -216,8 +216,36 @@ function apiInit_(user) {
   return { ok: true, user: { id: user.id, name: user.name }, active: active, history: history, profile: profile };
 }
 
+/* F.I.Sh. jadvalga faqat oʻzbek lotin alifbosida yoziladi (xodim kirillda yozsa ham).
+   Kirill → lotin: 1995-yilgi rasmiy qoidalar. "е" soʻz boshida va unlidan keyin "ye", "ц" unlidan keyin "ts", aks holda "s".
+   Lotincha apostroflar bir xil koʻrinishga keltiriladi: oʻ, gʻ (U+02BB) va tutuq belgisi ʼ (U+02BC). */
+var UZ_CYR_ = { "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "ж": "j", "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m",
+  "н": "n", "о": "o", "п": "p", "р": "r", "с": "s", "т": "t", "у": "u", "ф": "f", "х": "x", "ч": "ch", "ш": "sh", "щ": "sh", "ъ": "ʼ",
+  "ь": "", "ы": "i", "э": "e", "ю": "yu", "я": "ya", "ё": "yo", "ў": "oʻ", "қ": "q", "ғ": "gʻ", "ҳ": "h" };
+var UZ_CYR_VOW_ = "аеёиоуўэюяы";
+function uzLatin_(s) {
+  s = String(s == null ? "" : s);
+  return s.replace(/[^\s\-]+/g, function (w) {
+    var caps = w.length > 1 && w === w.toUpperCase() && w !== w.toLowerCase();
+    var out = "";
+    for (var i = 0; i < w.length; i++) {
+      var ch = w.charAt(i), lo = ch.toLowerCase(), prev = i > 0 ? w.charAt(i - 1).toLowerCase() : "";
+      var r;
+      if (lo === "е") r = (!prev || UZ_CYR_VOW_.indexOf(prev) >= 0 || prev === "ъ" || prev === "ь" || !/[а-яёўқғҳa-z]/.test(prev)) ? "ye" : "e";
+      else if (lo === "ц") r = prev && UZ_CYR_VOW_.indexOf(prev) >= 0 ? "ts" : "s";
+      else if (UZ_CYR_.hasOwnProperty(lo)) r = UZ_CYR_[lo];
+      else { out += ch; continue; }
+      if (ch !== lo && r) r = caps ? r.toUpperCase() : r.charAt(0).toUpperCase() + r.slice(1);
+      out += r;
+    }
+    /* apostroflar: oʻ / gʻ va tutuq belgisi */
+    out = out.replace(/([oOgG])['`‘’ʻʼ´]/g, "$1ʻ").replace(/(^|[^oOgG])['`‘’ʻ´]/g, "$1ʼ");
+    return out;
+  });
+}
+
 function apiStart_(user, req) {
-  var fio = String(req.fio || "").trim().replace(/\s+/g, " ").slice(0, 120);
+  var fio = uzLatin_(String(req.fio || "").trim().replace(/\s+/g, " ")).slice(0, 120);
   var region = String(req.region || ""), district = String(req.district || ""), role = String(req.role || "");
   var lang = ["lat", "cyr", "ru"].indexOf(req.lang) >= 0 ? req.lang : "lat";
   if (fio.split(" ").length < 2) return { ok: false, error: "fio" };
@@ -228,7 +256,7 @@ function apiStart_(user, req) {
     var sh = sheet_(SHEETS.att);
     var rows = userRows_(sh, user.id);
     var act = rows.filter(function (x) { return x.o.status === ST.started; })[0];
-    if (act) return { ok: true, resumed: true, attempt: { id: String(act.o.id), caseId: act.o.caseId, deadline: Number(act.o.deadline), startedAt: iso_(act.o.startedAt) } };
+    if (act) return { ok: true, resumed: true, attempt: { id: String(act.o.id), caseId: act.o.caseId, deadline: Number(act.o.deadline), startedAt: iso_(act.o.startedAt), fio: String(act.o.fio) } };
     /* keys: xodim eng kam yechganlari orasidan tasodifiy */
     var used = {};
     Object.keys(CASES).forEach(function (id) { used[id] = 0; });
@@ -245,7 +273,7 @@ function apiStart_(user, req) {
       deadline: now.getTime() + CFG.minutes * 60000
     };
     writeRow_(sh, sh.getLastRow() + 1, o); // appendRow emas: cellSafe_ (') aniq setValues orqali ishlaydi
-    return { ok: true, attempt: { id: o.id, caseId: caseId, deadline: o.deadline, startedAt: now.toISOString() } };
+    return { ok: true, attempt: { id: o.id, caseId: caseId, deadline: o.deadline, startedAt: now.toISOString(), fio: fio } };
   });
 }
 
