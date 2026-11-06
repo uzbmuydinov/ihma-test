@@ -1,5 +1,5 @@
 /**
- * IHMA — natija hisoboti (PDF).
+ * ISTC — natija hisoboti (PDF).
  * Bot xodimga yuboradigan PDF shu yerda chiziladi: umumiy ball shkalasi, mezonlar radari,
  * mezonlar shkalalari, kuchli tomonlar va eʼtibor qaratish kerak boʻlgan nuqtalar, mustaqillik, ekspert izohi.
  *
@@ -9,6 +9,7 @@
  */
 
 var PDF_W = 595.28, PDF_H = 841.89;
+var REP_BRAND = "ISTC";   // sarlavhadagi katta yozuv
 var RC = {
   navy: "#173F8F", primary: "#2964C2", accent: "#2CCFBE", bg: "#E8F1FF", soft: "#EEF4FF", line: "#D3E1F7", line2: "#BCD2F5",
   text: "#1F2D4D", muted: "#5D6B85", white: "#FFFFFF", onDarkMuted: "#C9D8F5",
@@ -26,8 +27,8 @@ var RT = {
     indep: "MUSTAQILLIK (TAXMIN)", expert: "EKSPERT IZOHI", expertTitle: "Ekspert izohi", summary: "UMUMIY XULOSA", awarded: "Ball berilgan asoslar", deducted: "Ball chegirilgan sabablar",
     none: "Qayd etilmagan", high: "Yuqori daraja", mid: "Oʻrta daraja", low: "Past daraja", cont: "davomi",
     caveat: "Mustaqillik — AI taxmini, yakuniy xulosa emas.",
-    footer: "IHMA · Malaka baholash tizimi. Baho AI hakam (Claude) tomonidan ideal javob asosida qoʻyilgan.",
-    timing: { "Vaqtida": "Vaqtida", "Avto": "Vaqt tugaganda avtomatik", "Kech": "Kechikib" }, file: "IHMA_natija"
+    footer: "ISTC · Malaka baholash tizimi. Baho AI hakam (Claude) tomonidan ideal javob asosida qoʻyilgan.",
+    timing: { "Vaqtida": "Vaqtida", "Avto": "Vaqt tugaganda avtomatik", "Kech": "Kechikib" }, file: "Keys baholash natijasi", docTitle: "Keys baholash natijasi"
   },
   cyr: {
     org: "Ижтимоий ҳимоя тизими ходимларининг малакасини ошириш маркази", title: "КЕЙС БАҲОЛАШ НАТИЖАСИ",
@@ -36,8 +37,8 @@ var RT = {
     indep: "МУСТАҚИЛЛИК (ТАХМИН)", expert: "ЭКСПЕРТ ИЗОҲИ", expertTitle: "Эксперт изоҳи", summary: "УМУМИЙ ХУЛОСА", awarded: "Балл берилган асослар", deducted: "Балл чегирилган сабаблар",
     none: "Қайд этилмаган", high: "Юқори даража", mid: "Ўрта даража", low: "Паст даража", cont: "давоми",
     caveat: "Мустақиллик — AI тахмини, якуний хулоса эмас.",
-    footer: "IHMA · Малака баҳолаш тизими. Баҳо AI ҳакам (Claude) томонидан идеал жавоб асосида қўйилган.",
-    timing: { "Vaqtida": "Вақтида", "Avto": "Вақт тугаганда автоматик", "Kech": "Кечикиб" }, file: "IHMA_natija"
+    footer: "ISTC · Малака баҳолаш тизими. Баҳо AI ҳакам (Claude) томонидан идеал жавоб асосида қўйилган.",
+    timing: { "Vaqtida": "Вақтида", "Avto": "Вақт тугаганда автоматик", "Kech": "Кечикиб" }, file: "Keys baholash natijasi", docTitle: "Кейс баҳолаш натижаси"
   },
   ru: {
     org: "Центр повышения квалификации работников системы социальной защиты", title: "РЕЗУЛЬТАТ ОЦЕНКИ КЕЙСА",
@@ -46,8 +47,8 @@ var RT = {
     indep: "САМОСТОЯТЕЛЬНОСТЬ (ОЦЕНКА)", expert: "КОММЕНТАРИЙ ЭКСПЕРТА", expertTitle: "Комментарий эксперта", summary: "ОБЩИЙ ВЫВОД", awarded: "За что начислены баллы", deducted: "За что сняты баллы",
     none: "Не отмечено", high: "Высокий уровень", mid: "Средний уровень", low: "Низкий уровень", cont: "продолжение",
     caveat: "Самостоятельность — оценка ИИ, не окончательный вывод.",
-    footer: "IHMA · Система оценки квалификации. Оценка выставлена ИИ-экспертом (Claude) на основе эталонного ответа.",
-    timing: { "Vaqtida": "Вовремя", "Avto": "Автоматически по истечении времени", "Kech": "С опозданием" }, file: "IHMA_natija"
+    footer: "ISTC · Система оценки квалификации. Оценка выставлена ИИ-экспертом (Claude) на основе эталонного ответа.",
+    timing: { "Vaqtida": "Вовремя", "Avto": "Автоматически по истечении времени", "Kech": "С опозданием" }, file: "Keys baholash natijasi", docTitle: "Результат оценки кейса"
   }
 };
 
@@ -203,7 +204,7 @@ function pdfBytes_(d, title) {
   });
   objs[catalog - 1] = "<< /Type /Catalog /Pages " + pagesId + " 0 R >>";
   objs[pagesId - 1] = "<< /Type /Pages /Kids [" + kids.map(function (k) { return k + " 0 R"; }).join(" ") + "] /Count " + kids.length + " >>";
-  var info = obj("<< /Title " + utf16hex(title || "IHMA") + " /Producer (IHMA malaka baholash) /Creator (IHMA) >>");
+  var info = obj("<< /Title " + utf16hex(title || REP_BRAND) + " /Producer " + utf16hex("ISTC · Malaka baholash tizimi") + " /Creator (ISTC) >>");
 
   str("%PDF-1.7\n"); bytes([0x25, 0xE2, 0xE3, 0xCF, 0xD3, 0x0A]);
   objs.forEach(function (b, i) {
@@ -279,7 +280,7 @@ function reportPdf_(o, res) {
   pdfRect_(d, 0, 0, PDF_W, 90, RC.navy);
   pdfRect_(d, 0, 90, PDF_W, 3, RC.accent);
   repBrand_(d, M, 25, 40);
-  pdfText_(d, "b", 20, RC.white, M + 52, 46, "IHMA");
+  pdfText_(d, "b", 20, RC.white, M + 52, 46, REP_BRAND);
   pdfLines_(d, "r", 8.5, RC.onDarkMuted, M + 52, 61, pdfWrap_("r", t.org, 8.5, 280), 11);
   pdfText_(d, "s", 8, RC.accent, PDF_W - M, 42, t.title, "right");
   pdfText_(d, "b", 12, RC.white, PDF_W - M, 60, evalDate, "right");
@@ -451,7 +452,7 @@ function reportPdf_(o, res) {
     pdfLines_(d, "r", 6.8, RC.muted, M, PDF_H - 33, pdfWrap_("r", t.footer, 6.8, CW - 50), 9);
     pdfText_(d, "s", 7.5, RC.muted, PDF_W - M, PDF_H - 33, (i + 1) + " / " + total_p, "right");
   });
-  var title = "IHMA — " + fio;
+  var title = String(fio).trim() + " — " + t.docTitle;   // PDF koʻruvchi oynasi sarlavhasi
   return Utilities.newBlob(pdfBytes_(d, title), "application/pdf", repFileName_(fio, t) + ".pdf");
 }
 
@@ -466,7 +467,7 @@ function repContPage_(d, fio, t, M, expert) {
   pdfRect_(d, 0, 0, PDF_W, 58, RC.navy);
   pdfRect_(d, 0, 58, PDF_W, 3, RC.accent);
   repBrand_(d, M, 15, 28);
-  pdfText_(d, "b", 12, RC.white, M + 38, 30, "IHMA");
+  pdfText_(d, "b", 12, RC.white, M + 38, 30, REP_BRAND);
   pdfText_(d, "r", 8.5, RC.onDarkMuted, M + 38, 43, pdfFit_("r", fio, 8.5, 300));
   pdfText_(d, "s", 8, RC.accent, PDF_W - M, 36, expert ? t.expert : t.title, "right");
 }
@@ -492,10 +493,15 @@ function repRadar_(d, crit, cx, cy, R, t, xMin, xMax) {
     pdfText_(d, "b", 7.5, l.txt, q[0], y0 + lines.length * 9, repNum_(c.score) + "/" + c.max, align);
   });
 }
-var REP_TR = { "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "yo", "ж": "j", "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m", "н": "n", "о": "o", "п": "p", "р": "r", "с": "s", "т": "t", "у": "u", "ф": "f", "х": "x", "ц": "ts", "ч": "ch", "ш": "sh", "щ": "sh", "ъ": "", "ы": "i", "ь": "", "э": "e", "ю": "yu", "я": "ya", "ў": "o", "қ": "q", "ғ": "g", "ҳ": "h" };
+var REP_TR = { "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "yo", "ж": "j", "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m", "н": "n", "о": "o", "п": "p", "р": "r", "с": "s", "т": "t", "у": "u", "ф": "f", "х": "x", "ц": "ts", "ч": "ch", "ш": "sh", "щ": "sh", "ъ": "'", "ы": "i", "ь": "", "э": "e", "ю": "yu", "я": "ya", "ў": "o'", "қ": "q", "ғ": "g'", "ҳ": "h" };
+/* Fayl nomi: "<F.I.Sh.> Keys baholash natijasi.pdf". Telegram'ga yuborishda buzilmasligi uchun
+   faqat lotin harflari (kirill — transliteratsiya), raqam, apostrof, nuqta, defis va boʻsh joy qoldiriladi. */
 function repFileName_(fio, t) {
-  var s = String(fio).toLowerCase().split("").map(function (ch) { return REP_TR[ch] != null ? REP_TR[ch] : ch; }).join("");
-  s = s.replace(/[ʻʼ'`’‘]/g, "").replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 40);
-  s = s.split("_").map(function (w) { return w ? w[0].toUpperCase() + w.slice(1) : w; }).join("_");
-  return t.file + (s ? "_" + s : "");
+  var s = String(fio || "").split("").map(function (ch) {
+    var lo = ch.toLowerCase(), tr = REP_TR[lo];
+    if (tr == null) return ch;
+    return ch !== lo && tr ? tr.charAt(0).toUpperCase() + tr.slice(1) : tr;
+  }).join("");
+  s = s.replace(/[ʻʼ`’‘]/g, "'").replace(/[^A-Za-z0-9' .-]+/g, " ").replace(/\s+/g, " ").trim().slice(0, 60).trim();
+  return (s ? s + " " : "") + t.file;
 }

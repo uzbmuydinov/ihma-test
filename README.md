@@ -17,7 +17,7 @@ Xodim (Telegram) → Mini App (shu repo, GitHub Pages) → Apps Script (apps-scr
 | `apps-script/ReportData.gs` | Hisobot uchun shrift (Montserrat, [OFL](apps-script/OFL-Montserrat.txt)) va hudud/lavozim nomlari 3 tilda. Avtomatik yaratilgan |
 | `Kalitlar.gs` | **Repoda yo'q, maxfiy.** Ideal javoblar. Admin alohida oladi |
 
-Natija botga **PDF fayl** bo'lib keladi: izohida ball, qisqa xulosa, kuchli tomon va eʼtibor qaratish kerak boʻlgan nuqta, ostida **«Batafsil ko'rish»** tugmasi (natija sahifasi). PDF yasab bo'lmasa, bot oddiy matnli xabar yuboradi.
+Natija botga **PDF fayl** bo'lib keladi (sarlavhada «ISTC», fayl nomi: `<F.I.Sh.> Keys baholash natijasi.pdf`): izohida ball, qisqa xulosa, kuchli tomon va eʼtibor qaratish kerak boʻlgan nuqta, ostida **«Batafsil ko'rish»** tugmasi (natija sahifasi). PDF yasab bo'lmasa, bot oddiy matnli xabar yuboradi.
 
 ## O'rnatish (bir marta)
 
