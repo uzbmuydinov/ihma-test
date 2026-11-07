@@ -27,7 +27,7 @@ var COLS = [
   ["notifiedAt", "Xabar yuborilgan"], ["tgId", "Telegram ID"], ["tgUser", "Telegram username"], ["tgName", "Telegram ismi"],
   ["lang", "Til"], ["regionId", "regionId"], ["districtId", "districtId"], ["roleId", "roleId"], ["caseId", "caseId"],
   ["deadline", "deadline"], ["claim", "claim"], ["note", "Izoh"],
-  /* mezonlar boʻyicha ball (0–4), baholovchi yozadi — xarita va oʻquv guruhlari uchun */
+  /* mezonlar boʻyicha ball (0–20; 2026-11-07 gacha 0–4), baholovchi yozadi — xarita va oʻquv guruhlari uchun */
   ["c1", "M1 Xatarlar"], ["c2", "M2 Himoya omillari"], ["c3", "M3 Kompleks xulosa"], ["c4", "M4 Xizmat rejasi"], ["c5", "M5 Advokatsiya"],
   /* javob maydoniga matn qoʻyish (paste) bloklangan; nechta urinish boʻlgani — halollik belgisi */
   ["pasteTries", "Nusxa qoʻyish urinishlari"]

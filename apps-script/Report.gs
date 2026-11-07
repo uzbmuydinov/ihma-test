@@ -28,7 +28,8 @@ var RT = {
     none: "Qayd etilmagan", high: "Yuqori daraja", mid: "Oʻrta daraja", low: "Past daraja", cont: "davomi",
     caveat: "Mustaqillik — AI taxmini, yakuniy xulosa emas.",
     footer: "ISTC · Malaka baholash tizimi. Baho AI hakam (Claude) tomonidan ideal javob asosida qoʻyilgan.",
-    timing: { "Vaqtida": "Vaqtida", "Avto": "Vaqt tugaganda avtomatik", "Kech": "Kechikib" }, file: "Keys baholash natijasi", docTitle: "Keys baholash natijasi"
+    timing: { "Vaqtida": "Vaqtida", "Avto": "Vaqt tugaganda avtomatik", "Kech": "Kechikib" }, file: "Keys baholash natijasi", docTitle: "Keys baholash natijasi",
+    answer: "XODIM JAVOBI", answerTitle: "Xodim javobi", hlGood: "Ball berilgan iboralar", hlBad: "Xato yoki keysga zid gaplar", answerEmpty: "Javob boʻsh"
   },
   cyr: {
     org: "Ижтимоий ҳимоя тизими ходимларининг малакасини ошириш маркази", title: "КЕЙС БАҲОЛАШ НАТИЖАСИ",
@@ -38,7 +39,8 @@ var RT = {
     none: "Қайд этилмаган", high: "Юқори даража", mid: "Ўрта даража", low: "Паст даража", cont: "давоми",
     caveat: "Мустақиллик — AI тахмини, якуний хулоса эмас.",
     footer: "ISTC · Малака баҳолаш тизими. Баҳо AI ҳакам (Claude) томонидан идеал жавоб асосида қўйилган.",
-    timing: { "Vaqtida": "Вақтида", "Avto": "Вақт тугаганда автоматик", "Kech": "Кечикиб" }, file: "Keys baholash natijasi", docTitle: "Кейс баҳолаш натижаси"
+    timing: { "Vaqtida": "Вақтида", "Avto": "Вақт тугаганда автоматик", "Kech": "Кечикиб" }, file: "Keys baholash natijasi", docTitle: "Кейс баҳолаш натижаси",
+    answer: "ХОДИМ ЖАВОБИ", answerTitle: "Ходим жавоби", hlGood: "Балл берилган иборалар", hlBad: "Хато ёки кейсга зид гаплар", answerEmpty: "Жавоб бўш"
   },
   ru: {
     org: "Центр повышения квалификации работников системы социальной защиты", title: "РЕЗУЛЬТАТ ОЦЕНКИ КЕЙСА",
@@ -48,7 +50,8 @@ var RT = {
     none: "Не отмечено", high: "Высокий уровень", mid: "Средний уровень", low: "Низкий уровень", cont: "продолжение",
     caveat: "Самостоятельность — оценка ИИ, не окончательный вывод.",
     footer: "ISTC · Система оценки квалификации. Оценка выставлена ИИ-экспертом (Claude) на основе эталонного ответа.",
-    timing: { "Vaqtida": "Вовремя", "Avto": "Автоматически по истечении времени", "Kech": "С опозданием" }, file: "Keys baholash natijasi", docTitle: "Результат оценки кейса"
+    timing: { "Vaqtida": "Вовремя", "Avto": "Автоматически по истечении времени", "Kech": "С опозданием" }, file: "Keys baholash natijasi", docTitle: "Результат оценки кейса",
+    answer: "ОТВЕТ СОТРУДНИКА", answerTitle: "Ответ сотрудника", hlGood: "Фразы, за которые начислены баллы", hlBad: "Ошибочные или противоречащие кейсу фразы", answerEmpty: "Ответ пуст"
   }
 };
 
@@ -353,7 +356,8 @@ function reportPdf_(o, res) {
     var bx = M + 26, bw = CW - 26, by = y + 18;
     pdfRRect_(d, bx, by, bw, 7, 3.5, RC.soft);
     if (c.ratio > 0) pdfRRect_(d, bx, by, Math.max(7, bw * c.ratio), 7, 3.5, l.c);
-    for (var k = 1; k < c.max; k++) pdfRect_(d, bx + bw * k / c.max - 0.6, by, 1.2, 7, RC.white);
+    var parts = c.max > 5 ? 4 : c.max;   // 20 balli mezonda 20 ta boʻlak emas — choraklar
+    for (var k = 1; k < parts; k++) pdfRect_(d, bx + bw * k / parts - 0.6, by, 1.2, 7, RC.white);
     y += 29;
   });
   y += 4;
@@ -443,7 +447,11 @@ function reportPdf_(o, res) {
     var yv = pdfLines_(d, "b", 10, RC.navy, M + 18, y + 40, vl, 14);
     nl.forEach(function (it) { pdfText_(d, "b", 9, RC.muted, M + 22, yv, "·"); yv = pdfLines_(d, "r", 9, RC.text, M + 34, yv, it, 12) + 3; });
     pdfText_(d, "r", 7.5, RC.muted, M + 18, yv + 8, t.caveat);
+    y += ih + 18;
   }
+
+  /* xodim javobi: ball berilgan iboralar yashil, xato gaplar qizil fonda */
+  y = repAnswer_(d, o, res, t, M, CW, y, BOTTOM, fio);
 
   /* pastki yozuv har sahifada */
   var total_p = d.pages.length;
@@ -455,6 +463,65 @@ function reportPdf_(o, res) {
   });
   var title = String(fio).trim() + " — " + t.docTitle;   // PDF koʻruvchi oynasi sarlavhasi
   return Utilities.newBlob(pdfBytes_(d, title), "application/pdf", repFileName_(fio, t) + ".pdf");
+}
+
+/* Belgilash: hakam bergan iboralar (res.highlights.good / bad) javob matnidan topiladi.
+   Apostrof turlari, katta-kichik harf va boʻshliqlar farqi hisobga olinmaydi; qizil yashildan ustun. */
+var REP_APOS = /[ʻʼ'‘’`´]/;
+function repHlMarks_(text, hl) {
+  var marks = [], norm = "", map = [], i;
+  for (i = 0; i < text.length; i++) marks.push(0);
+  for (i = 0; i < text.length; i++) {
+    var ch = text.charAt(i);
+    if (/\s/.test(ch)) { if (norm.slice(-1) === " ") continue; norm += " "; map.push(i); continue; }
+    norm += REP_APOS.test(ch) ? "'" : ch.toLowerCase().charAt(0); map.push(i);
+  }
+  [[(hl && hl.good) || [], 1], [(hl && hl.bad) || [], 2]].forEach(function (g) {
+    g[0].forEach(function (p) {
+      var q = String(p || "").toLowerCase().replace(/[ʻʼ'‘’`´]/g, "'").replace(/\s+/g, " ").trim();
+      if (q.length < 3) return;
+      for (var from = 0, at; (at = norm.indexOf(q, from)) > -1; from = at + q.length) {
+        for (var k = map[at]; k <= map[at + q.length - 1]; k++) if (marks[k] < g[1]) marks[k] = g[1];
+      }
+    });
+  });
+  return marks;
+}
+function repAnswer_(d, o, res, t, M, CW, y, BOTTOM, fio) {
+  var text = String(o.answer || "").replace(/\r/g, "").trim(), size = 9.5, lh = 14.5, X = M + 4, W = CW - 8;
+  var marks = repHlMarks_(text, res.highlights), lines = [[]], lw = 0, sp = pdfWidth_("r", " ", size), re = /\n|[^\s]+/g, m;
+  while ((m = re.exec(text))) {
+    if (m[0] === "\n") { if (lines[lines.length - 1].length || (lines.length > 1 && lines[lines.length - 2].length)) lines.push([]); lw = 0; continue; }
+    var c1 = 0, c2 = 0, n = m[0].length;
+    for (var k = m.index; k < m.index + n; k++) { if (marks[k] === 2) c2++; else if (marks[k] === 1) c1++; }
+    var tk = { w: m[0], f: c2 ? 2 : c1 * 2 >= n ? 1 : 0, ww: pdfWidth_("r", m[0], size) };
+    if (lines[lines.length - 1].length && lw + sp + tk.ww > W) { lines.push([]); lw = 0; }
+    var line = lines[lines.length - 1];
+    tk.x = line.length ? lw + sp : 0; lw = tk.x + tk.ww; line.push(tk);
+  }
+  if (y + 60 + lh * 3 > BOTTOM) { repContPage_(d, fio, t, M, true); y = 92; }
+  pdfText_(d, "b", 12.5, RC.navy, M, y, t.answerTitle);
+  y += 14;
+  var lx = M;
+  [[RC.okSoft, RC.okLine, t.hlGood], [RC.badSoft, RC.badLine, t.hlBad]].forEach(function (L) {
+    pdfRRect_(d, lx, y + 3, 20, 11, 3, L[0], L[1], 0.8);
+    pdfText_(d, "r", 8, RC.muted, lx + 26, y + 12, L[2]);
+    lx += 26 + pdfWidth_("r", L[2], 8) + 18;
+  });
+  y += 32;
+  if (!text) { pdfText_(d, "r", size, RC.muted, X, y, t.answerEmpty); return y + lh; }
+  lines.forEach(function (line) {
+    if (y + 4 > BOTTOM) { repContPage_(d, fio, t, M, true); y = 86; pdfText_(d, "s", 7.5, RC.muted, M, y, t.answer + " · " + t.cont); y += 20; }
+    for (var i = 0; i < line.length;) {   // bir xil belgili qoʻshni soʻzlar — bitta fon
+      var f = line[i].f, j = i;
+      while (j + 1 < line.length && line[j + 1].f === f) j++;
+      if (f) pdfRRect_(d, X + line[i].x - 2.5, y - 10.5, line[j].x + line[j].ww - line[i].x + 5, 14.5, 3, f === 2 ? RC.badSoft : RC.okSoft);
+      i = j + 1;
+    }
+    line.forEach(function (tk) { pdfText_(d, "r", size, tk.f === 2 ? RC.bad : tk.f === 1 ? RC.okText : RC.text, X + tk.x, y, tk.w); });
+    y += lh;
+  });
+  return y + 10;
 }
 
 function repBrand_(d, x, y, s) {
@@ -476,10 +543,11 @@ function repRadar_(d, crit, cx, cy, R, t, xMin, xMax) {
   var n = crit.length, maxC = Math.max.apply(null, crit.map(function (c) { return c.max; }));
   var pt = function (i, r) { var a = (-90 + i * 360 / n) * Math.PI / 180; return [cx + r * Math.cos(a), cy + r * Math.sin(a), Math.cos(a), Math.sin(a)]; };
   var ring = function (r) { var a = []; for (var i = 0; i < n; i++) a.push(pt(i, r)); return a; };
+  var steps = maxC > 5 ? 4 : maxC;   // 20 balli mezonda halqalar choraklarda (5, 10, 15, 20)
   pdfPoly_(d, ring(R), true, RC.soft, RC.line2, 0.9);
-  for (var k = 1; k < maxC; k++) pdfPoly_(d, ring(R * k / maxC), true, null, RC.line, 0.7);
+  for (var k = 1; k < steps; k++) pdfPoly_(d, ring(R * k / steps), true, null, RC.line, 0.7);
   for (var i = 0; i < n; i++) { var p = pt(i, R); pdfPoly_(d, [[cx, cy], [p[0], p[1]]], false, null, RC.line, 0.7); }
-  for (k = 1; k <= maxC; k++) pdfText_(d, "r", 6, RC.muted, cx + 3, cy - R * k / maxC + 2.5, String(k));
+  for (k = 1; k <= steps; k++) pdfText_(d, "r", 6, RC.muted, cx + 3, cy - R * k / steps + 2.5, repNum_(maxC * k / steps));
   var data = crit.map(function (c, i) { return pt(i, R * c.ratio); });
   pdfPoly_(d, data, true, RC.primary, null, 0, 0.22);
   pdfPoly_(d, data, true, null, RC.primary, 1.6);
