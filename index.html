@@ -1065,8 +1065,16 @@ body::before { height: calc(env(safe-area-inset-top, 0px) + var(--tg-top, 0px) +
   }
 
   /* ================= Telegram Mini App: holat va server bilan aloqa ================= */
-  var API_URL = "https://script.google.com/macros/s/AKfycbxQaXlH7lsNzYyP1KlNQPo8XoGg4LZfzF4qhJQGt5XvDd12n0LfUoP3o47yDE_wesmrRw/exec";
-  var BOT_LINK = "https://t.me/ihma_baholash_bot";
+  /* Bir sahifa — bir nechta bot: har bot o'z backend'i (jadvali) bilan ishlaydi.
+     Bot menyusi "?b=istc" bilan ochadi, natija tugmasi esa istc/ orqali shu yerga "b=istc" ni olib keladi. Kalit bo'lmasa — ihma. */
+  var BOTS = {
+    ihma: { api: "https://script.google.com/macros/s/AKfycbxQaXlH7lsNzYyP1KlNQPo8XoGg4LZfzF4qhJQGt5XvDd12n0LfUoP3o47yDE_wesmrRw/exec", link: "https://t.me/ihma_baholash_bot" },
+    istc: { api: "https://script.google.com/macros/s/AKfycbyv9vNnDFYTqwRx82X1xY-sBN4cvws_H7Wq4P86HucN92jrS1onGOa-QjvrB7eBRq1Cgg/exec", link: "https://t.me/istc_baholash_bot" }
+  };
+  var BOT_KEY = "ihma";
+  try { var bq = new URLSearchParams(location.search).get("b"); if (bq && BOTS[bq]) BOT_KEY = bq; } catch (e) {}
+  var API_URL = BOTS[BOT_KEY].api;
+  var BOT_LINK = BOTS[BOT_KEY].link;
   var TG = (window.Telegram && window.Telegram.WebApp) || null;
   var HAS_TG = !!(TG && TG.initData);
   var CONFIGURED = /^https:\/\//.test(API_URL) || /^http:\/\/localhost[:/]/.test(API_URL);
